@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlinelearning.dao.LearningRecordMapper">
+  <resultMap id="BaseResultMap" type="com.example.onlinelearning.pojo.LearningRecord">
+    <id column="leaid" jdbcType="INTEGER" property="leaid" />
+    <result column="cosid" jdbcType="INTEGER" property="cosid" />
+    <result column="couid" jdbcType="INTEGER" property="couid" />
+    <result column="userid" jdbcType="INTEGER" property="userid" />
+    <result column="beginTimeToLearn" jdbcType="VARCHAR" property="beginTimeToLearn" />
+    <result column="longTime" jdbcType="VARCHAR" property="longTime" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    leaid, cosid, couid, userid, beginTimeToLearn, longTime, notes
+  </sql>
+  <select id="selectByExample" parameterType="com.example.onlinelearning.pojo.LearningRecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from ole_learning_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="start !=0 or limit!=0">
+      limit #{start},#{limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ole_learning_record
+    where leaid = #{leaid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ole_learning_record
+    where leaid = #{leaid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.onlinelearning.pojo.LearningRecord">
+    insert into ole_learning_record (leaid, cosid, couid, 
+      userid, beginTimeToLearn, longTime, 
+      notes)
+    values (#{leaid,jdbcType=INTEGER}, #{cosid,jdbcType=INTEGER}, #{couid,jdbcType=INTEGER}, 
+      #{userid,jdbcType=INTEGER}, #{beginTimeToLearn,jdbcType=VARCHAR}, #{longTime,jdbcType=VARCHAR}, 
+      #{notes,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.onlinelearning.pojo.LearningRecord">
+    insert into ole_learning_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="leaid != null">
+        leaid,
+      </if>
+      <if test="cosid != null">
+        cosid,
+      </if>
+      <if test="couid != null">
+        couid,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="beginTimeToLearn != null">
+        beginTimeToLearn,
+      </if>
+      <if test="longTime != null">
+        longTime,
+      </if>
+      <if test="notes != null">
+        notes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="leaid != null">
+        #{leaid,jdbcType=INTEGER},
+      </if>
+      <if test="cosid != null">
+        #{cosid,jdbcType=INTEGER},
+      </if>
+      <if test="couid != null">
+        #{couid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="beginTimeToLearn != null">
+        #{beginTimeToLearn,jdbcType=VARCHAR},
+      </if>
+      <if test="longTime != null">
+        #{longTime,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.onlinelearning.pojo.LearningRecordExample" resultType="java.lang.Integer">
+    select count(*) from ole_learning_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.onlinelearning.pojo.LearningRecord">
+    update ole_learning_record
+    <set>
+      <if test="cosid != null">
+        cosid = #{cosid,jdbcType=INTEGER},
+      </if>
+      <if test="couid != null">
+        couid = #{couid,jdbcType=INTEGER},
+      </if>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="beginTimeToLearn != null">
+        beginTimeToLearn = #{beginTimeToLearn,jdbcType=VARCHAR},
+      </if>
+      <if test="longTime != null">
+        longTime = #{longTime,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where leaid = #{leaid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.onlinelearning.pojo.LearningRecord">
+    update ole_learning_record
+    set cosid = #{cosid,jdbcType=INTEGER},
+      couid = #{couid,jdbcType=INTEGER},
+      userid = #{userid,jdbcType=INTEGER},
+      beginTimeToLearn = #{beginTimeToLearn,jdbcType=VARCHAR},
+      longTime = #{longTime,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR}
+    where leaid = #{leaid,jdbcType=INTEGER}
+  </update>
+</mapper>

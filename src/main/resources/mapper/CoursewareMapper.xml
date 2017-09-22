@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlinelearning.dao.CoursewareMapper">
+  <resultMap id="BaseResultMap" type="com.example.onlinelearning.pojo.Courseware">
+    <id column="cosid" jdbcType="INTEGER" property="cosid" />
+    <result column="couid" jdbcType="INTEGER" property="couid" />
+    <result column="cosName" jdbcType="VARCHAR" property="cosName" />
+    <result column="cosUploadTime" jdbcType="VARCHAR" property="cosUploadTime" />
+    <result column="cosUrl" jdbcType="VARCHAR" property="cosUrl" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    cosid, couid, cosName, cosUploadTime, cosUrl, notes
+  </sql>
+  <select id="selectByExample" parameterType="com.example.onlinelearning.pojo.CoursewareExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from ole_courseware
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="start !=0 or limit!=0">
+      limit #{start},#{limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ole_courseware
+    where cosid = #{cosid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ole_courseware
+    where cosid = #{cosid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.onlinelearning.pojo.Courseware">
+    insert into ole_courseware (cosid, couid, cosName, 
+      cosUploadTime, cosUrl, notes
+      )
+    values (#{cosid,jdbcType=INTEGER}, #{couid,jdbcType=INTEGER}, #{cosName,jdbcType=VARCHAR}, 
+      #{cosUploadTime,jdbcType=VARCHAR}, #{cosUrl,jdbcType=VARCHAR}, #{notes,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.onlinelearning.pojo.Courseware">
+    insert into ole_courseware
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cosid != null">
+        cosid,
+      </if>
+      <if test="couid != null">
+        couid,
+      </if>
+      <if test="cosName != null">
+        cosName,
+      </if>
+      <if test="cosUploadTime != null">
+        cosUploadTime,
+      </if>
+      <if test="cosUrl != null">
+        cosUrl,
+      </if>
+      <if test="notes != null">
+        notes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cosid != null">
+        #{cosid,jdbcType=INTEGER},
+      </if>
+      <if test="couid != null">
+        #{couid,jdbcType=INTEGER},
+      </if>
+      <if test="cosName != null">
+        #{cosName,jdbcType=VARCHAR},
+      </if>
+      <if test="cosUploadTime != null">
+        #{cosUploadTime,jdbcType=VARCHAR},
+      </if>
+      <if test="cosUrl != null">
+        #{cosUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.onlinelearning.pojo.CoursewareExample" resultType="java.lang.Integer">
+    select count(*) from ole_courseware
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.onlinelearning.pojo.Courseware">
+    update ole_courseware
+    <set>
+      <if test="couid != null">
+        couid = #{couid,jdbcType=INTEGER},
+      </if>
+      <if test="cosName != null">
+        cosName = #{cosName,jdbcType=VARCHAR},
+      </if>
+      <if test="cosUploadTime != null">
+        cosUploadTime = #{cosUploadTime,jdbcType=VARCHAR},
+      </if>
+      <if test="cosUrl != null">
+        cosUrl = #{cosUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where cosid = #{cosid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.onlinelearning.pojo.Courseware">
+    update ole_courseware
+    set couid = #{couid,jdbcType=INTEGER},
+      cosName = #{cosName,jdbcType=VARCHAR},
+      cosUploadTime = #{cosUploadTime,jdbcType=VARCHAR},
+      cosUrl = #{cosUrl,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR}
+    where cosid = #{cosid,jdbcType=INTEGER}
+  </update>
+</mapper>

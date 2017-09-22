@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.onlinelearning.dao.ModelMapper">
+  <resultMap id="BaseResultMap" type="com.example.onlinelearning.pojo.Model">
+    <id column="modid" jdbcType="INTEGER" property="modid" />
+    <result column="modName" jdbcType="VARCHAR" property="modName" />
+    <result column="modDes" jdbcType="VARCHAR" property="modDes" />
+    <result column="parMod" jdbcType="INTEGER" property="parMod" />
+    <result column="modCD" jdbcType="INTEGER" property="modCD" />
+    <result column="modUrl" jdbcType="VARCHAR" property="modUrl" />
+    <result column="notes" jdbcType="VARCHAR" property="notes" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    modid, modName, modDes, parMod, modCD, modUrl, notes
+  </sql>
+  <select id="selectByExample" parameterType="com.example.onlinelearning.pojo.ModelExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from ole_model
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="start !=0 or limit!=0">
+      limit #{start},#{limit}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ole_model
+    where modid = #{modid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ole_model
+    where modid = #{modid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.example.onlinelearning.pojo.Model">
+    insert into ole_model (modid, modName, modDes, 
+      parMod, modCD, modUrl, 
+      notes)
+    values (#{modid,jdbcType=INTEGER}, #{modName,jdbcType=VARCHAR}, #{modDes,jdbcType=VARCHAR}, 
+      #{parMod,jdbcType=INTEGER}, #{modCD,jdbcType=INTEGER}, #{modUrl,jdbcType=VARCHAR}, 
+      #{notes,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.example.onlinelearning.pojo.Model">
+    insert into ole_model
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="modid != null">
+        modid,
+      </if>
+      <if test="modName != null">
+        modName,
+      </if>
+      <if test="modDes != null">
+        modDes,
+      </if>
+      <if test="parMod != null">
+        parMod,
+      </if>
+      <if test="modCD != null">
+        modCD,
+      </if>
+      <if test="modUrl != null">
+        modUrl,
+      </if>
+      <if test="notes != null">
+        notes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="modid != null">
+        #{modid,jdbcType=INTEGER},
+      </if>
+      <if test="modName != null">
+        #{modName,jdbcType=VARCHAR},
+      </if>
+      <if test="modDes != null">
+        #{modDes,jdbcType=VARCHAR},
+      </if>
+      <if test="parMod != null">
+        #{parMod,jdbcType=INTEGER},
+      </if>
+      <if test="modCD != null">
+        #{modCD,jdbcType=INTEGER},
+      </if>
+      <if test="modUrl != null">
+        #{modUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        #{notes,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.example.onlinelearning.pojo.ModelExample" resultType="java.lang.Integer">
+    select count(*) from ole_model
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.example.onlinelearning.pojo.Model">
+    update ole_model
+    <set>
+      <if test="modName != null">
+        modName = #{modName,jdbcType=VARCHAR},
+      </if>
+      <if test="modDes != null">
+        modDes = #{modDes,jdbcType=VARCHAR},
+      </if>
+      <if test="parMod != null">
+        parMod = #{parMod,jdbcType=INTEGER},
+      </if>
+      <if test="modCD != null">
+        modCD = #{modCD,jdbcType=INTEGER},
+      </if>
+      <if test="modUrl != null">
+        modUrl = #{modUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null">
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where modid = #{modid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.example.onlinelearning.pojo.Model">
+    update ole_model
+    set modName = #{modName,jdbcType=VARCHAR},
+      modDes = #{modDes,jdbcType=VARCHAR},
+      parMod = #{parMod,jdbcType=INTEGER},
+      modCD = #{modCD,jdbcType=INTEGER},
+      modUrl = #{modUrl,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR}
+    where modid = #{modid,jdbcType=INTEGER}
+  </update>
+</mapper>
