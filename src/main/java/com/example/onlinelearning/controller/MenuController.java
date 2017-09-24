@@ -17,11 +17,13 @@ public class MenuController extends BaseController {
     private MenuService menuService;
 
     @RequestMapping("/getList")
-    public PageResult getMenuList(Integer page, Integer rows, Model model){
+    public PageResult getMenuList(Integer page, Integer limit, Model model){
         PageResult pr = new PageResult();
-        Map<String, Object> map = super.getSearchMap(page, rows, model);
+        Map<String, Object> map = super.getSearchMap(page, limit, model);
         pr.setTotal(menuService.getTotal(model));
-        pr.setRows(super.getMenu(menuService.getList(map)));
+        pr.setRows(menuService.getList(map));
+        pr.setMsg("成功接收数据！");
+        pr.setSuccess(true);
         return pr;
     }
 

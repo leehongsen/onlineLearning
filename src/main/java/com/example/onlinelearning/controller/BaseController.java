@@ -13,14 +13,14 @@ public class BaseController {
 	/**
 	 * 数据起始位置
 	 * @param page
-	 * @param row
+	 * @param limit
 	 * @return
 	 */
-	public int getStartRow(Integer page, Integer row) {
+	public int getStartRow(Integer page, Integer limit) {
 		int res = 0;
 		if (page != null) {
 			if (page > 1) {
-				res = (page - 1) * row;
+				res = (page - 1) * limit;
 			} else {
 				res = 0;
 			}
@@ -33,16 +33,16 @@ public class BaseController {
 	/**
 	 *设置查询标准
 	 * @param page 当前页数
-	 * @param rows	当前一页几行数据
+	 * @param limit	当前一页几行数据
 	 * @param entity	实体
 	 * @return
 	 */
-	public Map<String, Object> getSearchMap(Integer page, Integer rows,
+	public Map<String, Object> getSearchMap(Integer page, Integer limit,
 			Object entity) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		Integer startRow = getStartRow(page, rows);
+		Integer startRow = getStartRow(page, limit);
 		map.put("start", startRow);
-		map.put("rows", rows == null ? 10 : rows);
+		map.put("limit", limit == null ? 10 : limit);
 		map.put("search", entity);
 		return map;
 	}

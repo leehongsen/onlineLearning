@@ -10,22 +10,12 @@
 <body>
 
     <table class="layui-table"  lay-filter="test" id="menuTable">
-        <thead>
-            <tr>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-                <th lay-data=""></th>
-            </tr>
-        </thead>
     </table>
 
     <script src="./plugins/layui/layui.js"></script>
+    <!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
     <script src="js/getLocalHost.js"></script>
+    <script src="./js/getToolbar.js"></script>
     <script>
         var host=getContextPath();
         layui.use('table', function() {
@@ -33,21 +23,36 @@
 
             table.render({
                 elem: '#menuTable' //指定原始表格元素选择器（推荐id选择器）
-                ,height: 315 //容器高度
+                //,height: 315 //容器高度
                 ,url: host+'/Menu/getList'
                 ,cols:[[
-                    {field:'rows.modid', width:80, sort: true,title:'模块ID'}
-                    ,{field:'rows.modName', width:80,title:'模块名'}
-                    ,{field:'rows.modDes', width:80, sort: true,title:'模块描述'}
-                    ,{field:'rows.parMod', width:80,sort:true,title:'父节点'}
-                    ,{field:'rows.modCD', width:177,title:'当前图标'}
-                    ,{field:'rows.modUrl', width:80, sort: true,title:'模块地址'}
-                    ,{field:'rows.notes', width:80, sort: true,title:'备注'}
-                    ,{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
+                    {field:'modid', width:120, sort: true,title:'模块ID'}
+                    ,{field:'modName', width:80,title:'模块名'}
+                    ,{field:'modDes', width:120, sort: true,title:'模块描述'}
+                    ,{field:'parMod', width:120,sort:true,title:'父节点'}
+                    ,{field:'modCD', width:177,title:'当前图标'}
+                    ,{field:'modUrl', width:120, sort: true,title:'模块地址'}
+                    ,{field:'notes', width:120, sort: true,title:'备注'}
+                    ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
                 ]]
+                ,response: {
+                    statusName: 'success', //数据状态的字段名称，默认：code
+                    statusCode: true //成功的状态码，默认：0
+                    //,msgName: 'hint' //状态信息的字段名称，默认：msg
+                    ,countName: 'total' //数据总数的字段名称，默认：count
+                    ,dataName: 'rows' //数据列表的字段名称，默认：data
+                }
+                /*,initSort: {
+                    field: 'modid' //排序字段，对应 cols 设定的各字段名
+                    ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+                }*/
+                ,page: true
+                ,limits: [10,30,60,90,150,300]
+                ,limit: 10 //默认采用60
             });
         });
     </script>
+
 </body>
 
 </html>
