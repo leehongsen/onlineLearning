@@ -1,10 +1,11 @@
 package com.example.onlinelearning.service.Impl;
 
+import com.example.onlinelearning.dao.CompetenceMapper;
+import com.example.onlinelearning.dao.RoleCompetenceVoMapper;
 import com.example.onlinelearning.dao.RoleMapper;
-import com.example.onlinelearning.pojo.Competence;
-import com.example.onlinelearning.pojo.Role;
-import com.example.onlinelearning.pojo.RoleExample;
+import com.example.onlinelearning.pojo.*;
 import com.example.onlinelearning.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,10 @@ import java.util.Map;
 @Component
 @Service
 public class RoleServiceImpl implements RoleService {
-
+    @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private CompetenceMapper competenceMapper;
 
     @Override
     public Integer getRolePermTotal(Role role) {
@@ -24,12 +27,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void deletePerm(Integer roleId) {
-
+        CompetenceKey key=new CompetenceKey();
+        key.setRoleid(roleId);
+        competenceMapper.deleteByPrimaryKey(key);
     }
 
     @Override
     public void savePer(Competence competence) {
-
+        competenceMapper.insertSelective(competence);
     }
 
     @Override
@@ -72,4 +77,6 @@ public class RoleServiceImpl implements RoleService {
     public Role getRecord(Role role) {
         return roleMapper.selectByPrimaryKey(role.getRoleid());
     }
+
+
 }

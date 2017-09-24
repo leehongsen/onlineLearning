@@ -62,18 +62,9 @@ public class UserController extends BaseController {
                 }
             }
         }
-        List<com.example.onlinelearning.pojo.Model> modellist=new
-                ArrayList<com.example.onlinelearning.pojo.Model>();
-        for (com.example.onlinelearning.pojo.Model r:list){
-            if(r.getParMod()==0){
-                modellist.add(r);
-                for (com.example.onlinelearning.pojo.Model flag:list){
-                    if(flag.getParMod()==r.getModid()){
-                        modellist.add(flag);
-                    }
-                }
-            }
-        }
+        List<Model> listdemo=new ArrayList<Model>();
+        listdemo.addAll(list);
+        List<com.example.onlinelearning.pojo.Model> modellist=super.getMenu(listdemo);
         return modellist;
     }
 
@@ -88,5 +79,11 @@ public class UserController extends BaseController {
     public String logout(HttpSession session){
         session.removeAttribute("userinfo");
         return "已登出";
+    }
+
+    //设置跳转关键方法
+    @RequestMapping("/toMenu")
+    public String toMenu(){
+        return "view/menuTable";
     }
 }

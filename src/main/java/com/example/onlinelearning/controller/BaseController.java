@@ -1,6 +1,10 @@
 package com.example.onlinelearning.controller;
 
+import com.example.onlinelearning.pojo.Model;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -43,5 +47,24 @@ public class BaseController {
 		return map;
 	}
 
-
+	/**
+	 * 根据文本获取指定顺序二级菜单
+	 * @param listMenu
+	 * @return
+	 */
+	public List<Model> getMenu(List<Model> listMenu){
+		List<com.example.onlinelearning.pojo.Model> modellist=new
+				ArrayList<Model>();
+		for (com.example.onlinelearning.pojo.Model r:listMenu){
+			if(r.getParMod()==0){
+				modellist.add(r);
+				for (com.example.onlinelearning.pojo.Model flag:listMenu){
+					if(flag.getParMod()==r.getModid()){
+						modellist.add(flag);
+					}
+				}
+			}
+		}
+		return modellist;
+	}
 }

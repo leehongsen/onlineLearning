@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>table模块快速使用</title>
+    <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
+</head>
+
+<body>
+
+    <table class="layui-table"  lay-filter="test" id="menuTable">
+        <thead>
+            <tr>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+                <th lay-data=""></th>
+            </tr>
+        </thead>
+    </table>
+
+    <script src="./plugins/layui/layui.js"></script>
+    <script src="js/getLocalHost.js"></script>
+    <script>
+        var host=getContextPath();
+        layui.use('table', function() {
+            var table = layui.table;
+
+            table.render({
+                elem: '#menuTable' //指定原始表格元素选择器（推荐id选择器）
+                ,height: 315 //容器高度
+                ,url: host+'/Menu/getList'
+                ,cols:[[
+                    {field:'rows.modid', width:80, sort: true,title:'模块ID'}
+                    ,{field:'rows.modName', width:80,title:'模块名'}
+                    ,{field:'rows.modDes', width:80, sort: true,title:'模块描述'}
+                    ,{field:'rows.parMod', width:80,sort:true,title:'父节点'}
+                    ,{field:'rows.modCD', width:177,title:'当前图标'}
+                    ,{field:'rows.modUrl', width:80, sort: true,title:'模块地址'}
+                    ,{field:'rows.notes', width:80, sort: true,title:'备注'}
+                    ,{fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
+                ]]
+            });
+        });
+    </script>
+</body>
+
+</html>

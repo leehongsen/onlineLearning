@@ -18,7 +18,7 @@ $.ajax({
                     "</li>";
                 $("#model").append(text);
             } else {
-                text = "<dd><a href=\"javascript:;\" kit-target=\"kit-target\" data-options=\"{url:'navbar.html',icon:'&#xe658;',title:'" + test.modName + "',id:'6'}\">\n" +
+                text = "<dd><a href=\"javascript:;\" kit-target=\"kit-target\" data-options=\"{url:'/OnlineLearning/"+test.modUrl+"',icon:'&#xe658;',title:'" + test.modName + "',id:'6'}\">\n" +
                     "<i class=\"layui-icon\">&#xe658;</i><span>" + test.modName + "</span></a></dd>";
                 var a = "#imp" + flag;
                 $(a).append(text);

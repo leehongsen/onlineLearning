@@ -1,13 +1,14 @@
 package com.example.onlinelearning.service.Impl;
 
 import com.example.onlinelearning.dao.ModelMapper;
-import com.example.onlinelearning.pojo.Model;
-import com.example.onlinelearning.pojo.ModelExample;
+import com.example.onlinelearning.dao.RoleCompetenceVoMapper;
+import com.example.onlinelearning.pojo.*;
 import com.example.onlinelearning.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ import java.util.Map;
 public class MenuServiceImpl implements MenuService {
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private RoleCompetenceVoMapper roleCompetenceVoMapper;
 
     @Override
     public Integer save(Model model) {
@@ -41,7 +44,10 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public List<Model> getList(Map<?, ?> m) {
-        return null;
+        ModelExample example=new ModelExample();
+        example.setStart((Integer) m.get("start"));
+        example.setLimit((Integer) m.get("limit"));
+        return modelMapper.selectByExample(example);
     }
 
     @Override
@@ -53,5 +59,27 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public Model getRecord(Model model) {
         return modelMapper.selectByPrimaryKey(model.getModid());
+    }
+
+    public List<Model> getMenuByRole(Role role) {
+        RoleCompetenceVoExample example=new RoleCompetenceVoExample();
+        RoleCompetenceVoExample.Criteria criteria=example.createCriteria();
+        criteria.andRoleidEqualTo(role.getRoleid());
+        List<RoleCompetenceVo> list=roleCompetenceVoMapper.selectByExample(example);
+        List<Model> models=new ArrayList();
+        if(list!=null){
+            for(RoleCompetenceVo a:list){
+                Model mo=new Model();
+                mo.setModid(a.getModid());
+                mo.setNotes(a.getNotes());
+                mo.setModCD(a.getModCD());
+                mo.setModDes(a.getModDes());
+                mo.setModName(a.getModName());
+                mo.setModUrl(a.getModUrl());
+                mo.setParMod(a.getParMod());
+                models.add(mo);
+            }
+        }
+        return models;
     }
 }
