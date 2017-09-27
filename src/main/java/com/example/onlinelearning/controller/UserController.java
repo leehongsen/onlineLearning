@@ -86,4 +86,5 @@ public class UserController extends BaseController {
     public String toMenu(){
         return "view/menuTable";
     }
+
 }

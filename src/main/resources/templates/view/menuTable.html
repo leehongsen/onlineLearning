@@ -9,30 +9,99 @@
 
 <body>
 
+    <div class="demoTable" style="margin-top: 8px">
+        <button class="layui-btn" id="add">
+            <i class="layui-icon">&#xe608;</i> 添加
+        </button>
+        搜索ID：
+        <div class="layui-inline">
+            <input class="layui-input" name="modid" id="demoReload" autocomplete="off"></input>
+        </div>
+        <button class="layui-btn" data-type="reload" id="">搜索</button>
+    </div>
     <table class="layui-table"  lay-filter="test" id="menuTable">
-    </table>
 
+    </table>
+    <!--测试代码-->
+    <form class="layui-form" action="" id="hidden" style="display: none">
+        <div class="layui-form-item">
+            <label class="layui-form-label">模块名称</label>
+            <div class="layui-input-block">
+                <input type="text" lay-verify="title" name="modName" id="getModName"
+                       autocomplete="off" placeholder="请输入名称" class="layui-input">
+                </input>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">模块描述</label>
+            <div class="layui-input-block">
+                <input type="text" name="modDes" lay-verify="required" id="getModDes"
+                       placeholder="请输入模块描述" autocomplete="off" class="layui-input">
+                </input>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">父节点 </label>
+                <div class="layui-input-block">
+                    <input type="text" name="parMod" lay-verify="title" id="getParMod"
+                           autocomplete="off" class="layui-input" placeholder="请输入父节点">
+                    </input>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="modUrl" lay-verify="title" id="getModUrl"
+                           autocomplete="off" class="layui-input" placeholder="请输入地址">
+                    </input>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">备注</label>
+                <div class="layui-input-block">
+                    <input type="text" name="notes" lay-verify="title" id="getNotes"
+                           autocomplete="off" class="layui-input" placeholder="请输入备注">
+                    </input>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">图标</label>
+                <div class="layui-input-block">
+                    <input type="text" name="modCD" id="getModCD" lay-verify="title"
+                           placeholder="XXXX" autocomplete="off" class="layui-input">
+                    </input>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!--测试代码 end-->
     <script src="./plugins/layui/layui.js"></script>
     <!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
+    <script src="js/jquery.min.js"></script>
     <script src="js/getLocalHost.js"></script>
-    <script src="./js/getToolbar.js"></script>
     <script>
         var host=getContextPath();
+        var height=window.screen.availHeight-250;
         layui.use('table', function() {
             var table = layui.table;
 
             table.render({
                 elem: '#menuTable' //指定原始表格元素选择器（推荐id选择器）
-                //,height: 315 //容器高度
+                ,height: height //容器高度
                 ,url: host+'/Menu/getList'
                 ,cols:[[
                     {field:'modid', width:120, sort: true,title:'模块ID'}
-                    ,{field:'modName', width:80,title:'模块名'}
-                    ,{field:'modDes', width:120, sort: true,title:'模块描述'}
+                    ,{field:'modName', width:120,title:'模块名'}
+                    ,{field:'modDes', width:120,title:'模块描述'}
                     ,{field:'parMod', width:120,sort:true,title:'父节点'}
                     ,{field:'modCD', width:177,title:'当前图标'}
-                    ,{field:'modUrl', width:120, sort: true,title:'模块地址'}
-                    ,{field:'notes', width:120, sort: true,title:'备注'}
+                    ,{field:'modUrl', width:120,title:'模块地址'}
+                    ,{field:'notes', width:120,title:'备注'}
                     ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
                 ]]
                 ,response: {
@@ -49,10 +118,252 @@
                 ,page: true
                 ,limits: [10,30,60,90,150,300]
                 ,limit: 10 //默认采用60
+                ,id:'idTest'
+
+            });
+
+            table.on('tool(test)', function(obj){
+                //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                var text='<div style="padding: 50px; line-height: 22px; ' +
+                    'background-color: #393D49; color: #fff; font-weight: 300;">';
+                text+='模块id：'+data.modid+'<br/>模块名称：'+data.modName+'<br/><br/>模块描述：';
+                text+=data.modDes+'<br/><br/>模块地址：'+data.modUrl;
+                if(data.praMod==0){
+                    text+='<br/><br/>该模块是最外层模块';
+                }
+                text+='</div>';
+                if(layEvent === 'detail'){ //查看
+                    layui.use('layer', function() { //独立版的layer无需执行这一句
+                        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+                        layer.open({
+                            type: 1
+                            ,title: false //不显示标题栏
+                            ,closeBtn: false
+                            ,area: '300px;'
+                            ,shade: 0.8
+                            ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                            ,btn: ['火速围观', '残忍拒绝']
+                            ,moveType: 1 //拖拽模式，0或者1
+                            ,content: text
+                            ,success: function (layero) {
+                                var btn = layero.find('.layui-layer-btn');
+                                btn.css('text-align', 'center');
+                                btn.find('.layui-layer-btn0').attr({
+                                    href: 'http://www.layui.com/'
+                                    , target: '_blank'
+                                });
+                            }
+                        });
+                    });
+                } else if(layEvent === 'del'){ //删除
+                    layer.confirm('真的删除行么', function(index){
+                        var arrayObj = new Array();
+                        arrayObj.push(data.modid);
+                        console.log(arrayObj);
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        //向服务端发送删除指令
+                        $.ajax({
+                            url:host + '/Menu/delete',
+                            data:arrayObj,
+                            success:function (json) {
+                                layer.close(index);
+                                if (json.success) {
+                                    layer.open({
+                                        type: 1
+                                        , offset: 'rb'
+                                        , id: 'delSuccess'
+                                        , content: json.msg
+                                        , btn: '关闭全部'
+                                        , btnAlign: 'c' //按钮居中
+                                        , shade: 0 //不显示遮罩
+                                        , yes: function () {
+                                            layer.closeAll();
+                                        }
+                                    });
+                                } else {
+                                    layer.open({
+                                        type: 1
+                                        , offset: 'rb'
+                                        , id: 'delFail'
+                                        , content: json.msg
+                                        , btn: '关闭全部'
+                                        , btnAlign: 'c' //按钮居中
+                                        , shade: 0 //不显示遮罩
+                                        , yes: function () {
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    });
+                } else if(layEvent === 'edit'){ //编辑
+                    $("#getModName").val(data.modName);
+                    $("#getModUrl").val(data.modUrl);
+                    $("#getModDes").val(data.modDes);
+                    $("#getParMod").val(data.parMod);
+                    $("#getModCD").val(data.modCD);
+                    $("#getNotes").val(data.notes);
+                    layui.use('layer', function() {
+                        var layer = layui.layer;
+                        layer.open({
+                            title:'编辑',
+                            type: 1,
+                            btn: ['确定','取消'],
+                            content:$("#hidden"),
+                            yes: function(index, layero) {
+                                //按钮【按钮一】的回调
+                                var a = new Object();
+                                a.modName = $("#getModName").val();
+                                a.modDes = $("#getModDes").val();
+                                a.parMod = $("#getParMod").val();
+                                a.modUrl = $("#getModUrl").val();
+                                a.notes = $("#getNotes").val();
+                                a.modCD = $("#getModCD").val();
+                                a.modid = data.modid;
+                                $.ajax({
+                                    url: host + '/Menu/modify',
+                                    data: a,
+                                    success: function (json) {
+                                        layer.close(index);
+                                        if (json.success) {
+                                            layer.open({
+                                                type: 1
+                                                , offset: 'rb'
+                                                , id: 'editSuccess'
+                                                , content: json.msg
+                                                , btn: '关闭全部'
+                                                , btnAlign: 'c' //按钮居中
+                                                , shade: 0 //不显示遮罩
+                                                , yes: function () {
+                                                    $("#getModName").val("");
+                                                    $("#getModUrl").val("");
+                                                    $("#getModDes").val("");
+                                                    $("#getParMod").val("");
+                                                    $("#getModCD").val("");
+                                                    $("#getNotes").val("");
+
+                                                    layer.closeAll();
+                                                }
+                                            });
+                                            //同步更新缓存对应的值
+                                            console.log(data);
+                                            console.log(obj);
+                                            obj.update({
+                                                modName: data.modName
+                                                ,modDes: data.modDes
+                                                ,parMod: data.parMod
+                                                ,modUrl: data.modUrl
+                                                ,notes: data.notes
+                                                ,modCD: data.modCD
+                                            });
+                                        } else {
+                                            layer.open({
+                                                type: 1
+                                                , offset: 'rb'
+                                                , id: 'editFail'
+                                                , content: json.msg
+                                                , btn: '关闭全部'
+                                                , btnAlign: 'c' //按钮居中
+                                                , shade: 0 //不显示遮罩
+                                                , yes: function () {
+                                                    $("#getModName").val("");
+                                                    $("#getModUrl").val("");
+                                                    $("#getModDes").val("");
+                                                    $("#getParMod").val("");
+                                                    $("#getModCD").val("");
+                                                    $("#getNotes").val("");
+                                                    layer.closeAll();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
+        //添加按钮
+        $("#add").click(function () {
+            layui.use('layer', function() {
+                var layer = layui.layer;
+                layer.open({
+                    title:'添加',
+                    type: 1,
+                    btn: ['确定','取消'],
+                    yes: function(index, layero){
+                    //按钮【按钮一】的回调
+                        var obj=new Object();
+                        obj.modName=$("#getModName").val();
+                        obj.modDes=$("#getModDes").val();
+                        obj.parMod=$("#getParMod").val();
+                        obj.modUrl=$("#getModUrl").val();
+                        obj.notes=$("#getNotes").val();
+                        obj.modCD=$("#getModCD").val();
+                        $.ajax({
+                            url:host+'/Menu/add',
+                            data:obj,
+                            success:function (json) {
+                                layer.close(index);
+                                if(json.success){
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addSuccess'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }else {
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addFail'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                    //按钮【按钮二】的回调
+
+                    //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    content:$("#hidden")
+                });
             });
         });
     </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+        <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
 
+        <!-- 这里同样支持 laytpl 语法，如： -->
+        {{#  if(d.auth > 2){ }}
+        <a class="layui-btn layui-btn-mini" lay-event="check">审核</a>
+        {{#  } }}
+    </script>
 </body>
 
 </html>

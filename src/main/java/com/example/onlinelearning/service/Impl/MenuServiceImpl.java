@@ -22,7 +22,7 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public Integer save(Model model) {
-        return modelMapper.insert(model);
+        return modelMapper.insertSelective(model);
     }
 
     @Override
