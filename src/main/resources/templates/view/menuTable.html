@@ -15,9 +15,9 @@
         </button>
         搜索ID：
         <div class="layui-inline">
-            <input class="layui-input" name="modid" id="demoReload" autocomplete="off"></input>
+            <input class="layui-input" name="modid" id="searchInput" autocomplete="off"></input>
         </div>
-        <button class="layui-btn" data-type="reload" id="">搜索</button>
+        <button class="layui-btn" data-type="reload" id="search">搜索</button>
     </div>
     <table class="layui-table"  lay-filter="test" id="menuTable">
 
@@ -86,11 +86,11 @@
     <script src="js/getLocalHost.js"></script>
     <script>
         var host=getContextPath();
-        var height=window.screen.availHeight-250;
+        var height=window.screen.availHeight-280;
         layui.use('table', function() {
             var table = layui.table;
 
-            table.render({
+            var menuTable=table.render({
                 elem: '#menuTable' //指定原始表格元素选择器（推荐id选择器）
                 ,height: height //容器高度
                 ,url: host+'/Menu/getList'
@@ -120,6 +120,26 @@
                 ,limit: 10 //默认采用60
                 ,id:'idTest'
 
+            });
+
+            //查询
+            $("#search").click(function () {
+                //<![CDATA[
+                var search=$("#searchInput").val();
+                if(search!=null && search!=""){
+                    menuTable.reload({
+                        where:{
+                            modName:search
+                        }
+                    });
+                }else{
+                    menuTable.reload({
+                        where:{
+                        }
+                    });
+
+                }
+                //]]>
             });
 
             table.on('tool(test)', function(obj){
@@ -160,15 +180,11 @@
                     });
                 } else if(layEvent === 'del'){ //删除
                     layer.confirm('真的删除行么', function(index){
-                        var arrayObj = new Array();
-                        arrayObj.push(data.modid);
-                        console.log(arrayObj);
-                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
-                        layer.close(index);
+
                         //向服务端发送删除指令
                         $.ajax({
                             url:host + '/Menu/delete',
-                            data:arrayObj,
+                            data:{modid:data.modid},
                             success:function (json) {
                                 layer.close(index);
                                 if (json.success) {
@@ -182,6 +198,8 @@
                                         , shade: 0 //不显示遮罩
                                         , yes: function () {
                                             layer.closeAll();
+                                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                            layer.close(index);
                                         }
                                     });
                                 } else {
@@ -252,14 +270,14 @@
                                             });
                                             //同步更新缓存对应的值
                                             console.log(data);
-                                            console.log(obj);
+                                            console.log(obj.update);
                                             obj.update({
-                                                modName: data.modName
-                                                ,modDes: data.modDes
-                                                ,parMod: data.parMod
-                                                ,modUrl: data.modUrl
-                                                ,notes: data.notes
-                                                ,modCD: data.modCD
+                                                modName: a.modName
+                                                ,modDes: a.modDes
+                                                ,parMod: a.parMod
+                                                ,modUrl: a.modUrl
+                                                ,notes: a.notes
+                                                ,modCD: a.modCD
                                             });
                                         } else {
                                             layer.open({
@@ -288,6 +306,7 @@
                     });
                 }
             });
+
         });
 
         //添加按钮
@@ -353,6 +372,8 @@
                 });
             });
         });
+
+
     </script>
     <script type="text/html" id="barDemo">
         <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>

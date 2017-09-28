@@ -56,8 +56,10 @@ public class MenuController extends BaseController {
     }
 
     @RequestMapping("/delete")
-    public Json deleteModel(String[] modelid){
-        Integer r=menuService.delete(modelid);
+    public Json deleteModel(String modid){
+        String[] modelids=modid.split(",");
+
+        Integer r=menuService.delete(modelids);
         Json json=new Json();
         if (r>0){
             json.setSuccess(true);
@@ -68,4 +70,15 @@ public class MenuController extends BaseController {
         }
         return json;
     }
+
+    /*@RequestMapping("/getLike")
+    public PageResult getLike(Integer page, Integer limit, Model model){
+        PageResult pr = new PageResult();
+        Map<String, Object> map = super.getSearchMap(page, limit, model);
+        pr.setTotal(menuService.getTotal(model));
+        pr.setRows(menuService.getLike(model));
+        pr.setMsg("成功接收数据！");
+        pr.setSuccess(true);
+        return pr;
+    }*/
 }

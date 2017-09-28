@@ -44,4 +44,5 @@ public interface BaseService<T> {
      *
      */
     T getRecord(T t);
+
 }

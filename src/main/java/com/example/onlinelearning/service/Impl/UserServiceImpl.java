@@ -106,4 +106,11 @@ public class UserServiceImpl implements UserService {
     public User getRecord(User user) {
         return null;
     }
+
+    /*public List<User> getLike(User user) {
+        UserExample example=new UserExample();
+        UserExample.Criteria criteria=example.createCriteria();
+        criteria.andUsernameLike(user.getUsername());
+        return userMapper.selectByExample(example);
+    }*/
 }

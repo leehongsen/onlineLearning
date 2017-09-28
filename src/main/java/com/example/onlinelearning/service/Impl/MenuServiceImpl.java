@@ -47,12 +47,23 @@ public class MenuServiceImpl implements MenuService {
         ModelExample example=new ModelExample();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
+        ModelExample.Criteria criteria=example.createCriteria();
+        if(m.get("search")!=null){
+            Model model=(Model) m.get("search");
+            if(model.getModName()!=null&&model.getModName()!=""){
+                criteria.andModNameLike("%"+model.getModName()+"%");
+            }
+        }
         return modelMapper.selectByExample(example);
     }
 
     @Override
     public Integer getTotal(Model model) {
         ModelExample example=new ModelExample();
+        ModelExample.Criteria criteria=example.createCriteria();
+        if(model.getModName()!=null&&model.getModName()!=""){
+            criteria.andModNameLike("%"+model.getModName()+"%");
+        }
         return modelMapper.countByExample(example);
     }
 
@@ -60,6 +71,7 @@ public class MenuServiceImpl implements MenuService {
     public Model getRecord(Model model) {
         return modelMapper.selectByPrimaryKey(model.getModid());
     }
+
 
     public List<Model> getMenuByRole(Role role) {
         RoleCompetenceVoExample example=new RoleCompetenceVoExample();

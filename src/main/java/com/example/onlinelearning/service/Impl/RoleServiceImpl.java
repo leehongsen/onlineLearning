@@ -62,14 +62,23 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Role> getList(Map<?, ?> m) {
         RoleExample example=new RoleExample();
+        RoleExample.Criteria criteria=example.createCriteria();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
+        Role role=(Role) m.get("search");
+        if(role.getRoleName()!=null&&role.getRoleName()!=""){
+            criteria.andRoleNameLike("%"+role.getRoleName()+"%");
+        }
         return roleMapper.selectByExample(example);
     }
 
     @Override
     public Integer getTotal(Role role) {
         RoleExample example=new RoleExample();
+        RoleExample.Criteria criteria=example.createCriteria();
+        if(role.getRoleName()!=null&&role.getRoleName()!=""){
+            criteria.andRoleNameLike("%"+role.getModName()+"%");
+        }
         return roleMapper.countByExample(example);
     }
 
@@ -77,6 +86,5 @@ public class RoleServiceImpl implements RoleService {
     public Role getRecord(Role role) {
         return roleMapper.selectByPrimaryKey(role.getRoleid());
     }
-
 
 }
