@@ -1,0 +1,18 @@
+#server:
+#  context-path: /OnlineLearning   #设置页面url显示项目名
+#
+#spring:
+#  datasource:           #连接数据库
+#    url: jdbc:mysql://localhost:3306/onlinelearning
+#    username: root
+#    password:
+#    driver-class-name: com.mysql.jdbc.Driver
+#  jpa:
+#    database: mysql
+#  http:
+#    multipart:
+#      max-file-size: 1000Mb
+#      max-request-size: 1000Mb
+#
+#mybatis:           #Mybatis扫描
+#  mapper-locations: classpath*:/mapper/*.xml

@@ -65,8 +65,10 @@
   </select>
   <delete id="deleteByPrimaryKey" parameterType="com.example.onlinelearning.pojo.CompetenceKey">
     delete from ole_competence
-    where modid = #{modid,jdbcType=INTEGER}
-      and roleid = #{roleid,jdbcType=INTEGER}
+    where roleid = #{roleid,jdbcType=INTEGER}
+    <if test="modid !=null">
+      and modid = #{modid,jdbcType=INTEGER}
+    </if>
   </delete>
   <insert id="insert" parameterType="com.example.onlinelearning.pojo.Competence">
     insert into ole_competence (modid, roleid, comNum

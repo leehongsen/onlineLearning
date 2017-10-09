@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer save(User user) {
-        return userMapper.insert(user);
+        return userMapper.insertSelective(user);
     }
 
     @Override
@@ -94,12 +94,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getList(Map<?, ?> m) {
-        return null;
+        UserExample example=new UserExample();
+        UserExample.Criteria criteria=example.createCriteria();
+        example.setStart((Integer) m.get("start"));
+        example.setLimit((Integer) m.get("limit"));
+        User user=(User) m.get("search");
+        if(user.getUsername()!=null&&user.getUsername()!=""){
+            criteria.andUsernameLike("%"+user.getUsername()+"%");
+        }
+        return userMapper.selectByExample(example);
     }
 
     @Override
     public Integer getTotal(User user) {
-        return 0;
+        UserExample example=new UserExample();
+        UserExample.Criteria criteria=example.createCriteria();
+        if(user.getUsername()!=null&&user.getUsername()!=""){
+            criteria.andUsernameLike("%"+user.getUsername()+"%");
+        }
+        return userMapper.countByExample(example);
     }
 
     @Override

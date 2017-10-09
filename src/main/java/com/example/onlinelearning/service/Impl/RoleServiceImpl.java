@@ -1,7 +1,6 @@
 package com.example.onlinelearning.service.Impl;
 
 import com.example.onlinelearning.dao.CompetenceMapper;
-import com.example.onlinelearning.dao.RoleCompetenceVoMapper;
 import com.example.onlinelearning.dao.RoleMapper;
 import com.example.onlinelearning.pojo.*;
 import com.example.onlinelearning.service.RoleService;
@@ -22,7 +21,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Integer getRolePermTotal(Role role) {
-        return null;
+        CompetenceExample example=new CompetenceExample();
+        CompetenceExample.Criteria criteria=example.createCriteria();
+        criteria.andRoleidEqualTo(role.getRoleid());
+        return competenceMapper.countByExample(example);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Integer save(Role role) {
-        return roleMapper.insert(role);
+        return roleMapper.insertSelective(role);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
         RoleExample example=new RoleExample();
         RoleExample.Criteria criteria=example.createCriteria();
         if(role.getRoleName()!=null&&role.getRoleName()!=""){
-            criteria.andRoleNameLike("%"+role.getModName()+"%");
+            criteria.andRoleNameLike("%"+role.getRoleName()+"%");
         }
         return roleMapper.countByExample(example);
     }

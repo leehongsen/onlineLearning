@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>table模块快速使用</title>
+    <title>菜单管理</title>
     <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
 </head>
 
@@ -13,7 +13,7 @@
         <button class="layui-btn" id="add">
             <i class="layui-icon">&#xe608;</i> 添加
         </button>
-        搜索ID：
+        搜索：
         <div class="layui-inline">
             <input class="layui-input" name="modid" id="searchInput" autocomplete="off"></input>
         </div>
@@ -73,7 +73,7 @@
                 <label class="layui-form-label">图标</label>
                 <div class="layui-input-block">
                     <input type="text" name="modCD" id="getModCD" lay-verify="title"
-                           placeholder="XXXX" autocomplete="off" class="layui-input">
+                           placeholder="设置图标" autocomplete="off" class="layui-input">
                     </input>
                 </div>
             </div>
@@ -165,14 +165,14 @@
                             ,area: '300px;'
                             ,shade: 0.8
                             ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                            ,btn: ['火速围观', '残忍拒绝']
+                            ,btn: ['百度一下', '确定']
                             ,moveType: 1 //拖拽模式，0或者1
                             ,content: text
                             ,success: function (layero) {
                                 var btn = layero.find('.layui-layer-btn');
                                 btn.css('text-align', 'center');
                                 btn.find('.layui-layer-btn0').attr({
-                                    href: 'http://www.layui.com/'
+                                    href: 'http://www..com/'
                                     , target: '_blank'
                                 });
                             }
@@ -307,71 +307,79 @@
                 }
             });
 
-        });
 
-        //添加按钮
-        $("#add").click(function () {
-            layui.use('layer', function() {
-                var layer = layui.layer;
-                layer.open({
-                    title:'添加',
-                    type: 1,
-                    btn: ['确定','取消'],
-                    yes: function(index, layero){
-                    //按钮【按钮一】的回调
-                        var obj=new Object();
-                        obj.modName=$("#getModName").val();
-                        obj.modDes=$("#getModDes").val();
-                        obj.parMod=$("#getParMod").val();
-                        obj.modUrl=$("#getModUrl").val();
-                        obj.notes=$("#getNotes").val();
-                        obj.modCD=$("#getModCD").val();
-                        $.ajax({
-                            url:host+'/Menu/add',
-                            data:obj,
-                            success:function (json) {
-                                layer.close(index);
-                                if(json.success){
-                                    layer.open({
-                                        type: 1
-                                        ,offset: 'rb'
-                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-                                        ,id: 'addSuccess'
-                                        ,content: json.msg
-                                        ,btn: '关闭全部'
-                                        ,btnAlign: 'c' //按钮居中
-                                        ,shade: 0 //不显示遮罩
-                                        ,yes: function(){
-                                            layer.closeAll();
-                                        }
-                                    });
-                                }else {
-                                    layer.open({
-                                        type: 1
-                                        ,offset: 'rb'
-                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
-                                        ,id: 'addFail'
-                                        ,content: json.msg
-                                        ,btn: '关闭全部'
-                                        ,btnAlign: 'c' //按钮居中
-                                        ,shade: 0 //不显示遮罩
-                                        ,yes: function(){
-                                            layer.closeAll();
-                                        }
-                                    });
+            //添加按钮
+            $("#add").click(function () {
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    layer.open({
+                        title:'添加',
+                        type: 1,
+                        btn: ['确定','取消'],
+                        yes: function(index, layero){
+                            //按钮【按钮一】的回调
+                            var obj=new Object();
+                            obj.modName=$("#getModName").val();
+                            obj.modDes=$("#getModDes").val();
+                            obj.parMod=$("#getParMod").val();
+                            obj.modUrl=$("#getModUrl").val();
+                            obj.notes=$("#getNotes").val();
+                            obj.modCD=$("#getModCD").val();
+                            $.ajax({
+                                url:host+'/Menu/add',
+                                data:obj,
+                                success:function (json) {
+                                    layer.close(index);
+                                    if(json.success){
+                                        layer.open({
+                                            type: 1
+                                            ,offset: 'rb'
+                                            //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                            ,id: 'addSuccess'
+                                            ,content: json.msg
+                                            ,btn: '关闭全部'
+                                            ,btnAlign: 'c' //按钮居中
+                                            ,shade: 0 //不显示遮罩
+                                            ,yes: function(){
+                                                layer.closeAll();
+                                            }
+                                        });
+
+                                    }else {
+                                        layer.open({
+                                            type: 1
+                                            ,offset: 'rb'
+                                            //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                            ,id: 'addFail'
+                                            ,content: json.msg
+                                            ,btn: '关闭全部'
+                                            ,btnAlign: 'c' //按钮居中
+                                            ,shade: 0 //不显示遮罩
+                                            ,yes: function(){
+                                                layer.closeAll();
+                                            }
+                                        });
+                                    }
                                 }
-                            }
-                        });
-                    }
-                    ,btn2: function(index, layero){
-                    //按钮【按钮二】的回调
+                            });
+                        }
+                        ,btn2: function(index, layero){
+                            //按钮【按钮二】的回调
 
-                    //return false 开启该代码可禁止点击该按钮关闭
-                    },
-                    content:$("#hidden")
+                            //return false 开启该代码可禁止点击该按钮关闭
+                        },
+                        content:$("#hidden")
+                    });
+                });
+                menuTable.reload({
+                    where:{
+
+                    }
                 });
             });
         });
+
+
 
 
     </script>

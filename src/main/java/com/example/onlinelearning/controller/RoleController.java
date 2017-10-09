@@ -10,6 +10,7 @@ import com.example.onlinelearning.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,13 @@ public class RoleController extends BaseController {
     private MenuService menuService;
 
     @RequestMapping("/getList")
-    public PageResult getRoleList(Integer page, Integer rows, Role role){
+    public PageResult getRoleList(Integer page, Integer limit, Role role){
         PageResult pr = new PageResult();
-        Map<String, Object> map = super.getSearchMap(page, rows, role);
+        Map<String, Object> map = super.getSearchMap(page, limit, role);
         pr.setTotal(roleService.getTotal(role));
         pr.setRows(roleService.getList(map));
+        pr.setSuccess(true);
+        pr.setMsg("返回数据是成功的！");
         return pr;
     }
 
@@ -60,8 +63,10 @@ public class RoleController extends BaseController {
     }
 
     @RequestMapping("/delete")
-    public Json deleteRole(String[] roleid){
-        Integer r=roleService.delete(roleid);
+    public Json deleteRole(String roleid){
+        String[] roleids=roleid.split(",");
+
+        Integer r=roleService.delete(roleids);
         Json json=new Json();
         if (r>0){
             json.setSuccess(true);
@@ -77,6 +82,29 @@ public class RoleController extends BaseController {
     public List<Model> getMenuByRole(Role role){
         List<Model> menuList = menuService.getMenuByRole(role);
         return super.getMenu(menuList);
+    }
+
+    @RequestMapping("/getRoleMenu")
+    public PageResult getRoleMenu(Integer page, Integer limit, Role role){
+        PageResult pr = new PageResult();
+        Map<String, Object> map = super.getSearchMap(page, limit, role);
+        List<Role> list=roleService.getList(map);
+        for (int i=0;i<list.size();i++){
+            List<Model> models=this.getMenuByRole(list.get(i));
+            String notes="";
+            for(Model a:models){
+                notes+=a.getModName()+"<br/>";
+            }
+            if(notes!=null&&notes!=""){
+                notes=notes.substring(0,notes.length()-5);
+                System.out.println(notes);
+                list.get(i).setNotes(notes);
+            }
+        }
+        pr.setRows(list);
+        pr.setSuccess(true);
+        pr.setMsg("返回数据是成功的！");
+        return pr;
     }
 
     @RequestMapping("/saveCompetence")

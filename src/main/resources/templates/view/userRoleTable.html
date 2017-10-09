@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>设置用户角色</title>
+    <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
+</head>
+<body>
+<!--用户菜单-->
+<div class="layui-collapse" id="getList" >
+
+</div>
+
+<!--树形结构-->
+<ul id="treeMenu" style="display: none">
+
+</ul>
+
+<!--节点编辑-->
+<form class="layui-form" action="" id="Menu" style="display: none">
+
+</form>
+
+<script src="./plugins/layui/layui.js"></script>
+<!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
+<script src="js/jquery.min.js"></script>
+<script src="js/getLocalHost.js"></script>
+<script>
+    //<![CDATA[
+    var host=getContextPath();
+    $(function() {
+        var host=getContextPath();
+        $.ajax({
+            url:host+'/users/getList',
+            async:false,
+            data:{
+                limit:100,
+            },
+            success:function (json) {
+                if(json.success){
+                    var getList=$("#getList");
+                    $.each(json.rows,function (index,domEle) {
+                        var h2="<div class=\"layui-colla-item\">\n" +
+                            "<h2 class=\"layui-colla-title\" id=\"do"+index+"\">"+
+                            domEle.username+
+                            "<a style='margin-left: 100px' class=" +
+                            "\"layui-btn layui-btn-mini\" " +
+                            "onclick='dolook("+domEle.userid+")'>查看</a>" +
+                            "<a class=\"layui-btn layui-btn-mini\" " +
+                            "onclick='edit("+domEle.userid+")'>编辑</a></h2>\n";
+                        getList.append(h2);
+                    });
+                }
+            }
+        });
+
+
+
+        $.ajax({
+            url:host+'/role/getList',
+            data:{
+                limit:100
+            },
+            async:false,
+            success:function (json) {
+                if(json.success){
+                    var inner="";
+                    inner+=" <div class=\"layui-form-item\">\n" +
+                        "    <label class=\"layui-form-label\">角色列表</label>\n" +
+                        "    <div class=\"layui-input-block\">\n";
+                    $.each(json.rows,function (index,domEle) {
+                        inner+="<input type=\"checkbox\" name=\"roleid["+domEle.roleid+"]\" title=\""+
+                            domEle.roleName+"\" id=\"roleid"+domEle.roleid+"\" value=\""+
+                            domEle.roleid+"\">\n"
+                    });
+                    inner+="</div></div>";
+                    $("#Menu").append(inner);
+                }else{
+
+                }
+            }
+        });
+
+    });
+    //查看
+    function dolook(userid) {
+        $.ajax({
+            url:host+'/users/getRoleByUser',
+            data:{
+                userid:userid
+            },
+            success:function (json) {
+                layui.use('layer', function(){
+                    var layer = layui.layer;
+
+                    $.each(json,function (index,domEle) {
+                        $("#treeMenu").
+                        append("<div class=\"layui-anim layui-anim-upbit\">"+domEle.roleName+"</div>");
+                    });
+                    layer.open({
+                        title:'查看',
+                        type: 1,
+                        content:$("#treeMenu"),
+                        area: ['500px', '300px']
+                    });
+
+                });
+            }
+        });
+        $("#treeMenu").empty();
+    }
+
+    //编辑
+    function edit(userid) {
+        $.ajax({
+            url:host+'/users/getRoleByUser',
+            data:{
+                userid:userid
+            },
+            success:function (json) {
+                $.each(json,function (index,domEle) {
+                    /*var imp="#roleid["+domEle.roleid+"]";*/
+                    $("#roleid"+domEle.roleid).attr("checked",true);
+                });
+                layui.use(['layer','tree','form'], function(){
+                    var layer = layui.layer;
+                    layer.open({
+                        title: '编辑',
+                        type: 1,
+                        btn: ['确定', '取消'],
+                        content: $("#Menu"),
+                        yes: function(index, layero) {
+                            var arr=new Array();
+                            var list=$('input[type=checkbox]:checked');
+                            var right=new Array();
+                            $.each(list,function (index,domEle) {
+                                arr.push(domEle.value);
+                                right.push(1);
+                            });
+                            console.log(arr);
+                            var data=new Object();
+                            data.userid=userid;
+                            data.pids=arr;
+                            data.right=right;
+                            console.log(data);
+                            $.ajax({
+                                url:host+'/role/saveCompetence',
+                                data:data,
+                                type:'post',
+                                traditional:true,
+                                success:function (json) {
+                                    if(json.success){
+                                        layer.open({
+                                            type: 1
+                                            ,offset: 'rb'
+                                            ,id: 'addSuccess'
+                                            ,content: json.msg
+                                            ,btn: '关闭全部'
+                                            ,btnAlign: 'c' //按钮居中
+                                            ,shade: 0 //不显示遮罩
+                                            ,yes: function(){
+                                                layer.closeAll();
+                                                $("input[type=checkbox]:checked").attr("checked",false);
+                                                location.reload();
+                                            }
+                                        });
+                                    }else{
+                                        layer.open({
+                                            type: 1
+                                            ,offset: 'rb'
+                                            ,id: 'addFail'
+                                            ,content: json.msg
+                                            ,btn: '关闭全部'
+                                            ,btnAlign: 'c' //按钮居中
+                                            ,shade: 0 //不显示遮罩
+                                            ,yes: function(){
+                                                layer.closeAll();
+                                                $("input[type=checkbox]:checked").attr("checked",false);
+                                                location.reload();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                            $("input[type=checkbox]:checked").attr("checked",false);
+                            location.reload();
+                        },
+                        btn2:function (index, layero) {
+                            $("input[type=checkbox]:checked").attr("checked",false);
+                            location.reload();
+                        },
+                        cancel: function(){
+                            $("input[type=checkbox]:checked").attr("checked",false);
+                            location.reload();
+                        }
+
+                    });
+
+                });
+
+            }
+        });
+    }
+
+
+    //]]>
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+
+    <!-- 这里同样支持 laytpl 语法，如： -->
+    {{#  if(d.auth > 2){ }}
+    <a class="layui-btn layui-btn-mini" lay-event="check">审核</a>
+    {{#  } }}
+</script>
+</body>
+</html>

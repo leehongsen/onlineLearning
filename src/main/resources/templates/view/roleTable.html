@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>角色管理</title>
+    <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
+</head>
+
+<body>
+
+<div class="demoTable" style="margin-top: 8px">
+    <button class="layui-btn" id="add">
+        <i class="layui-icon">&#xe608;</i> 添加
+    </button>
+    搜索：
+    <div class="layui-inline">
+        <input class="layui-input" name="roleid" id="searchInput" autocomplete="off"></input>
+    </div>
+    <button class="layui-btn" data-type="reload" id="search">搜索</button>
+</div>
+<table class="layui-table"  lay-filter="test" id="roleTable">
+
+</table>
+<!--测试代码-->
+<form class="layui-form" action="" id="hidden" style="display: none">
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="title" name="roleName" id="getRoleName"
+                   autocomplete="off" placeholder="请输入名称" class="layui-input">
+            </input>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色描述</label>
+        <div class="layui-input-block">
+            <input type="text" name="roleDes" lay-verify="required" id="getRoleDes"
+                   placeholder="请输入模块描述" autocomplete="off" class="layui-input">
+            </input>
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="notes" lay-verify="title" id="getNotes"
+                       autocomplete="off" class="layui-input" placeholder="请输入备注">
+                </input>
+            </div>
+        </div>
+    </div>
+</form>
+<!--测试代码 end-->
+<script src="./plugins/layui/layui.js"></script>
+<!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
+<script src="js/jquery.min.js"></script>
+<script src="js/getLocalHost.js"></script>
+<script>
+    var host=getContextPath();
+    var height=window.screen.availHeight-280;
+    layui.use('table', function() {
+        var table = layui.table;
+
+        var roleTable=table.render({
+            elem: '#roleTable' //指定原始表格元素选择器（推荐id选择器）
+            ,height: height //容器高度
+            ,url: host+'/role/getList'
+            ,cols:[[
+                {field:'roleid', width:120, sort: true,title:'角色ID'}
+                ,{field:'roleName', width:120,title:'角色名'}
+                ,{field:'roleDes', width:120,title:'角色描述'}
+                ,{field:'notes', width:120,title:'备注'}
+                ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
+            ]]
+            ,response: {
+                statusName: 'success', //数据状态的字段名称，默认：code
+                statusCode: true //成功的状态码，默认：0
+                //,msgName: 'hint' //状态信息的字段名称，默认：msg
+                ,countName: 'total' //数据总数的字段名称，默认：count
+                ,dataName: 'rows' //数据列表的字段名称，默认：data
+            }
+            /*,initSort: {
+                field: 'roleid' //排序字段，对应 cols 设定的各字段名
+                ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+            }*/
+            ,page: true
+            ,limits: [10,30,60,90,150,300]
+            ,limit: 10 //默认采用60
+            ,id:'idTest'
+
+        });
+
+        //查询
+        $("#search").click(function () {
+            //<![CDATA[
+            var search=$("#searchInput").val();
+            if(search!=null && search!=""){
+                roleTable.reload({
+                    where:{
+                        roleName:search
+                    }
+                });
+            }else{
+                roleTable.reload({
+                    where:{
+                    }
+                });
+
+            }
+            //]]>
+        });
+
+        table.on('tool(test)', function(obj){
+            //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            var text='<div style="padding: 50px; line-height: 22px; ' +
+                'background-color: #393D49; color: #fff; font-weight: 300;">';
+            text+='角色id：'+data.roleid+'<br/>角色名称：'+data.roleName+'<br/><br/>角色描述：';
+            text+=data.roleDes+'<br/><br/>';
+            text+='</div>';
+            if(layEvent === 'detail'){ //查看
+                layui.use('layer', function() { //独立版的layer无需执行这一句
+                    var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+                    layer.open({
+                        type: 1
+                        ,title: false //不显示标题栏
+                        ,closeBtn: false
+                        ,area: '300px;'
+                        ,shade: 0.8
+                        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                        ,btn: ['百度一下', '确定']
+                        ,moveType: 1 //拖拽模式，0或者1
+                        ,content: text
+                        ,success: function (layero) {
+                            var btn = layero.find('.layui-layer-btn');
+                            btn.css('text-align', 'center');
+                            btn.find('.layui-layer-btn0').attr({
+                                href: 'http://www..com/'
+                                , target: '_blank'
+                            });
+                        }
+                    });
+                });
+            } else if(layEvent === 'del'){ //删除
+                layer.confirm('真的删除行么', function(index){
+
+                    //向服务端发送删除指令
+                    $.ajax({
+                        url:host + '/role/delete',
+                        data:{roleid:data.roleid},
+                        success:function (json) {
+                            layer.close(index);
+                            if (json.success) {
+                                layer.open({
+                                    type: 1
+                                    , offset: 'rb'
+                                    , id: 'delSuccess'
+                                    , content: json.msg
+                                    , btn: '关闭全部'
+                                    , btnAlign: 'c' //按钮居中
+                                    , shade: 0 //不显示遮罩
+                                    , yes: function () {
+                                        layer.closeAll();
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                        layer.close(index);
+                                    }
+                                });
+                            } else {
+                                layer.open({
+                                    type: 1
+                                    , offset: 'rb'
+                                    , id: 'delFail'
+                                    , content: json.msg
+                                    , btn: '关闭全部'
+                                    , btnAlign: 'c' //按钮居中
+                                    , shade: 0 //不显示遮罩
+                                    , yes: function () {
+                                        layer.closeAll();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                $("#getRoleName").val(data.roleName);
+                $("#getRoleDes").val(data.roleDes);
+                $("#getNotes").val(data.notes);
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    layer.open({
+                        title:'编辑',
+                        type: 1,
+                        btn: ['确定','取消'],
+                        content:$("#hidden"),
+                        yes: function(index, layero) {
+                            //按钮【按钮一】的回调
+                            var a = new Object();
+                            a.roleName = $("#getRoleName").val();
+                            a.roleDes = $("#getRoleDes").val();
+                            a.notes = $("#getNotes").val();
+                            a.roleid = data.roleid;
+                            $.ajax({
+                                url: host + '/role/modify',
+                                data: a,
+                                success: function (json) {
+                                    layer.close(index);
+                                    if (json.success) {
+                                        layer.open({
+                                            type: 1
+                                            , offset: 'rb'
+                                            , id: 'editSuccess'
+                                            , content: json.msg
+                                            , btn: '关闭全部'
+                                            , btnAlign: 'c' //按钮居中
+                                            , shade: 0 //不显示遮罩
+                                            , yes: function () {
+                                                $("#getRoleName").val("");
+                                                $("#getRoleDes").val("");
+                                                $("#getNotes").val("");
+
+                                                layer.closeAll();
+                                            }
+                                        });
+                                        //同步更新缓存对应的值
+                                        console.log(data);
+                                        console.log(obj.update);
+                                        obj.update({
+                                            roleName: a.roleName
+                                            ,roleDes: a.roleDes
+                                            ,notes: a.notes
+                                        });
+                                    } else {
+                                        layer.open({
+                                            type: 1
+                                            , offset: 'rb'
+                                            , id: 'editFail'
+                                            , content: json.msg
+                                            , btn: '关闭全部'
+                                            , btnAlign: 'c' //按钮居中
+                                            , shade: 0 //不显示遮罩
+                                            , yes: function () {
+                                                $("#getRoleName").val("");
+                                                $("#getRoleDes").val("");
+                                                $("#getNotes").val("");
+                                                layer.closeAll();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+
+        //添加按钮
+        $("#add").click(function () {
+            layui.use('layer', function() {
+                var layer = layui.layer;
+                layer.open({
+                    title:'添加',
+                    type: 1,
+                    btn: ['确定','取消'],
+                    yes: function(index, layero){
+                        //按钮【按钮一】的回调
+                        var obj=new Object();
+                        obj.roleName=$("#getRoleName").val();
+                        obj.roleDes=$("#getRoleDes").val();
+                        obj.notes=$("#getNotes").val();
+                        $.ajax({
+                            url:host+'/role/add',
+                            data:obj,
+                            success:function (json) {
+                                layer.close(index);
+                                if(json.success){
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addSuccess'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }else {
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addFail'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    content:$("#hidden")
+                });
+            });
+            roleTable.reload({
+                where:{
+
+                }
+            });
+        });
+    });
+
+
+
+
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+
+    <!-- 这里同样支持 laytpl 语法，如： -->
+    {{#  if(d.auth > 2){ }}
+    <a class="layui-btn layui-btn-mini" lay-event="check">审核</a>
+    {{#  } }}
+</script>
+</body>
+
+</html>
