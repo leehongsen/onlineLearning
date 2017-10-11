@@ -1,6 +1,9 @@
 package com.example.onlinelearning.service.Impl;
 
+import com.example.onlinelearning.dao.LearnscorevoMapper;
 import com.example.onlinelearning.dao.ScoresMapper;
+import com.example.onlinelearning.pojo.Learnscorevo;
+import com.example.onlinelearning.pojo.LearnscorevoExample;
 import com.example.onlinelearning.pojo.Scores;
 import com.example.onlinelearning.pojo.ScoresExample;
 import com.example.onlinelearning.service.ScoresService;
@@ -16,6 +19,8 @@ import java.util.Map;
 public class ScoresServiceImpl implements ScoresService {
     @Autowired
     private ScoresMapper scoresMapper;
+    @Autowired
+    private LearnscorevoMapper learnscorevoMapper;
 
     @Override
     public Integer save(Scores scores) {
@@ -40,21 +45,21 @@ public class ScoresServiceImpl implements ScoresService {
     }
 
     @Override
-    public List<Scores> getList(Map<?, ?> m) {
-        ScoresExample example=new ScoresExample();
+    public List<Learnscorevo> getList(Map<?, ?> m) {
+        LearnscorevoExample example=new LearnscorevoExample();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
-        ScoresExample.Criteria criteria=example.createCriteria();
+        LearnscorevoExample.Criteria criteria=example.createCriteria();
         if(m.get("search")!=null){
-            Scores scores=(Scores) m.get("search");
-            if(scores.getCouid()!=null){
-                criteria.andCouidEqualTo(scores.getCouid());
+            Learnscorevo scores=(Learnscorevo) m.get("search");
+            if(scores.getCouName()!=null&&scores.getCouName()!=""){
+                criteria.andCouNameLike("%"+scores.getCouName()+"%");
             }
-            if(scores.getUserid()!=null){
-                criteria.andUseridEqualTo(scores.getUserid());
+            if(scores.getUsername()!=null&&scores.getUsername()!=""){
+                criteria.andUsernameLike("%"+scores.getUsername()+"%");
             }
         }
-        return scoresMapper.selectByExample(example);
+        return learnscorevoMapper.selectByExample(example);
     }
 
     @Override
@@ -68,6 +73,18 @@ public class ScoresServiceImpl implements ScoresService {
             criteria.andUseridEqualTo(scores.getUserid());
         }
         return scoresMapper.countByExample(example);
+    }
+
+    public Integer getTotal(Learnscorevo learnscorevo) {
+        LearnscorevoExample example=new LearnscorevoExample();
+        LearnscorevoExample.Criteria criteria=example.createCriteria();
+        if(learnscorevo.getCouName()!=null){
+            criteria.andCouNameLike("%"+learnscorevo.getCouName()+"%");
+        }
+        if(learnscorevo.getUserid()!=null){
+            criteria.andUsernameLike("%"+learnscorevo.getUsername()+"%");
+        }
+        return learnscorevoMapper.countByExample(example);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.onlinelearning.service;
 
+import com.example.onlinelearning.pojo.Learnscorevo;
+
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public interface BaseService<T> {
      *
      * @return
      */
-    List<T> getList(Map<?, ?> m);
+    List getList(Map<?, ?> m);
 
     /**
      * 获得数据总数

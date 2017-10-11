@@ -1,6 +1,9 @@
 package com.example.onlinelearning.service.Impl;
 
+import com.example.onlinelearning.dao.ClassgroupvoMapper;
 import com.example.onlinelearning.dao.GroupMapper;
+import com.example.onlinelearning.pojo.Classgroupvo;
+import com.example.onlinelearning.pojo.ClassgroupvoExample;
 import com.example.onlinelearning.pojo.Group;
 import com.example.onlinelearning.pojo.GroupExample;
 import com.example.onlinelearning.service.GroupService;
@@ -16,6 +19,8 @@ import java.util.Map;
 public class GroupServiceImpl implements GroupService {
     @Autowired
     private GroupMapper groupMapper;
+    @Autowired
+    private ClassgroupvoMapper classgroupvoMapper;
 
     @Override
     public Integer save(Group group) {
@@ -40,18 +45,42 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> getList(Map<?, ?> m) {
+    public List<Classgroupvo> getList(Map<?, ?> m) {
+        ClassgroupvoExample example=new ClassgroupvoExample();
+        example.setStart((Integer) m.get("start"));
+        example.setLimit((Integer) m.get("limit"));
+        ClassgroupvoExample.Criteria criteria=example.createCriteria();
+        if(m.get("search")!=null){
+            Classgroupvo group=(Classgroupvo) m.get("search");
+            if(group.getGroupName()!=null&&group.getGroupName()!=""){
+                criteria.andGroupNameLike("%"+group.getGroupName()+"%");
+            }
+            if(group.getCouName()!=null&&group.getCouName()!=""){
+                criteria.andCouNameLike("%"+group.getCouName()+"%");
+            }
+        }
+        return classgroupvoMapper.selectByExample(example);
+    }
+
+    public List<Group> getList2(Map<?, ?> m) {
         GroupExample example=new GroupExample();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
         GroupExample.Criteria criteria=example.createCriteria();
-        if(m.get("search")!=null){
-            Group group=(Group) m.get("search");
-            if(group.getGroupName()!=null&&group.getGroupName()!=""){
-                criteria.andGroupNameLike("%"+group.getGroupName()+"%");
-            }
-        }
         return groupMapper.selectByExample(example);
+    }
+
+
+    public Integer getTotal(Classgroupvo classgroupvo) {
+        ClassgroupvoExample example=new ClassgroupvoExample();
+        ClassgroupvoExample.Criteria criteria=example.createCriteria();
+        if(classgroupvo.getGroupName()!=null&&classgroupvo.getGroupName()!=""){
+            criteria.andGroupNameLike("%"+classgroupvo.getGroupName()+"%");
+        }
+        if(classgroupvo.getCouName()!=null&&classgroupvo.getCouName()!=""){
+            criteria.andCouNameLike("%"+classgroupvo.getCouName()+"%");
+        }
+        return classgroupvoMapper.countByExample(example);
     }
 
     @Override
@@ -68,4 +97,6 @@ public class GroupServiceImpl implements GroupService {
     public Group getRecord(Group group) {
         return groupMapper.selectByPrimaryKey(group.getGroupid());
     }
+
+
 }

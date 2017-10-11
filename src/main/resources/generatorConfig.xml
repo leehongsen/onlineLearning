@@ -130,5 +130,26 @@
                selectByExampleQueryId="true">
             <property name="useActualColumnNames" value="true"/>
         </table>
+        <!--14-->
+        <table tableName="classgroupvo" domainObjectName="Classgroupvo"
+               enableCountByExample="true" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="true">
+            <property name="useActualColumnNames" value="true"/>
+        </table>
+        <!--15-->
+        <table tableName="coursevo" domainObjectName="Coursevo"
+               enableCountByExample="true" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="true">
+            <property name="useActualColumnNames" value="true"/>
+        </table>
+        <!--16-->
+        <table tableName="learnscorevo" domainObjectName="Learnscorevo"
+               enableCountByExample="true" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="true"
+               selectByExampleQueryId="true">
+            <property name="useActualColumnNames" value="true"/>
+        </table>
     </context>
 </generatorConfiguration>

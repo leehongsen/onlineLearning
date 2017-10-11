@@ -51,9 +51,11 @@ public class CourseServiceImpl implements CourseService {
         CourseExample.Criteria criteria=example.createCriteria();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
-        Course course=(Course) m.get("search");
-        if(course.getCouName()!=null&&course.getCouName()!=""){
-            criteria.andCouNameLike("%"+course.getCouName()+"%");
+        if(m.get("search")!=null){
+            Course course=(Course) m.get("search");
+            if(course.getCouName()!=null&&course.getCouName()!=""){
+                criteria.andCouNameLike("%"+course.getCouName()+"%");
+            }
         }
         return courseMapper.selectByExample(example);
     }

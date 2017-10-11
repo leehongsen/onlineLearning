@@ -67,9 +67,11 @@ public class RoleServiceImpl implements RoleService {
         RoleExample.Criteria criteria=example.createCriteria();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
-        Role role=(Role) m.get("search");
-        if(role.getRoleName()!=null&&role.getRoleName()!=""){
-            criteria.andRoleNameLike("%"+role.getRoleName()+"%");
+        if(m.get("search")!=null){
+            Role role=(Role) m.get("search");
+            if(role.getRoleName()!=null&&role.getRoleName()!=""){
+                criteria.andRoleNameLike("%"+role.getRoleName()+"%");
+            }
         }
         return roleMapper.selectByExample(example);
     }

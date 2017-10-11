@@ -98,9 +98,11 @@ public class UserServiceImpl implements UserService {
         UserExample.Criteria criteria=example.createCriteria();
         example.setStart((Integer) m.get("start"));
         example.setLimit((Integer) m.get("limit"));
-        User user=(User) m.get("search");
-        if(user.getUsername()!=null&&user.getUsername()!=""){
-            criteria.andUsernameLike("%"+user.getUsername()+"%");
+        if(m.get("search")!=null){
+            User user=(User) m.get("search");
+            if(user.getUsername()!=null&&user.getUsername()!=""){
+                criteria.andUsernameLike("%"+user.getUsername()+"%");
+            }
         }
         return userMapper.selectByExample(example);
     }

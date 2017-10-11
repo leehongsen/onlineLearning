@@ -1,5 +1,6 @@
 package com.example.onlinelearning.controller;
 
+import com.example.onlinelearning.pojo.Coursevo;
 import com.example.onlinelearning.pojo.Courseware;
 import com.example.onlinelearning.service.CoursewareService;
 import com.example.onlinelearning.utils.Json;
@@ -26,7 +27,7 @@ public class CoursewareController extends BaseController{
     private CoursewareService coursewareService;
 
     @RequestMapping("/getList")
-    public PageResult getCoursewareList(Integer page, Integer limit, Courseware courseware){
+    public PageResult getCoursewareList(Integer page, Integer limit, Coursevo courseware){
         PageResult pr = new PageResult();
         Map<String, Object> map = super.getSearchMap(page, limit, courseware);
         pr.setTotal(coursewareService.getTotal(courseware));
@@ -41,7 +42,7 @@ public class CoursewareController extends BaseController{
         Json json=new Json();
         List<MultipartFile> files = ((MultipartHttpServletRequest) request)
                 .getFiles("file");
-        String filepath="E:\\project\\onlineLearning\\src\\main\\resources\\static\\\\";
+        String filepath="E:\\project\\onlineLearning\\src\\main\\resources\\static\\courseware\\";
         MultipartFile file = null;
         BufferedOutputStream stream = null;
         String notes = "";
@@ -110,7 +111,6 @@ public class CoursewareController extends BaseController{
     @RequestMapping("/delete")
     public Json deleteCourse(String cosid){
         String[] modelids=cosid.split(",");
-
         Integer r=coursewareService.delete(modelids);
         Json json=new Json();
         if (r>0){

@@ -1,7 +1,9 @@
 package com.example.onlinelearning.controller;
 
+import com.example.onlinelearning.pojo.Classgroupvo;
 import com.example.onlinelearning.pojo.Group;
 import com.example.onlinelearning.service.GroupService;
+import com.example.onlinelearning.service.Impl.GroupServiceImpl;
 import com.example.onlinelearning.utils.Json;
 import com.example.onlinelearning.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +13,29 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/Menu")
+@RequestMapping("/group")
 public class GroupController extends BaseController{
     @Autowired
-    private GroupService groupService;
+    private GroupServiceImpl groupService;
 
     @RequestMapping("/getList")
-    public PageResult getMenuList(Integer page, Integer limit, Group group){
+    public PageResult getMenuList(Integer page, Integer limit, Classgroupvo group){
         PageResult pr = new PageResult();
         Map<String, Object> map = super.getSearchMap(page, limit, group);
         pr.setTotal(groupService.getTotal(group));
         pr.setRows(groupService.getList(map));
-        pr.setMsg("成功接收批次数据！");
+        pr.setMsg("成功接收批次的数据！");
+        pr.setSuccess(true);
+        return pr;
+    }
+
+    @RequestMapping("/getList2")
+    public PageResult getMenuList2(Integer page, Integer limit, Group group){
+        PageResult pr = new PageResult();
+        Map<String, Object> map = super.getSearchMap(page, limit, group);
+        pr.setTotal(groupService.getTotal(group));
+        pr.setRows(groupService.getList2(map));
+        pr.setMsg("成功接收批次的数据！");
         pr.setSuccess(true);
         return pr;
     }

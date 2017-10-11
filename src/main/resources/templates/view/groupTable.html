@@ -1,40 +1,65 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>课件管理</title>
+    <meta charset="UTF-8" />
+    <title>批次管理</title>
     <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
 </head>
-
 <body>
 
 <div class="demoTable" style="margin-top: 8px">
     <button class="layui-btn" id="add">
         <i class="layui-icon">&#xe608;</i> 添加
     </button>
-    搜索课件名称：
+    搜索批次：
     <div class="layui-inline">
-        <input class="layui-input" name="cosname" id="cosnameInput" autocomplete="off"></input>
+        <input class="layui-input" name="groupName" id="searchGroupName" autocomplete="off"></input>
     </div>
-    搜索所属课程：
+    搜索课程：
     <div class="layui-inline">
-        <input class="layui-input" name="couname" id="counameInput" autocomplete="off"></input>
+        <input class="layui-input" name="couName" id="searchCouName" autocomplete="off"></input>
     </div>
     <button class="layui-btn" data-type="reload" id="search">搜索</button>
 </div>
-<table class="layui-table"  lay-filter="test" id="coursewareTable">
+<table class="layui-table"  lay-filter="test" id="groupTable">
 
 </table>
-<!--设置课件-->
+
+<table class="layui-table"  lay-filter="test" id="groupTable2">
+
+</table>
+<!--测试代码-->
 <form class="layui-form" action="" id="hidden" style="display: none">
     <div class="layui-form-item">
-        <label class="layui-form-label">课件名称</label>
+        <label class="layui-form-label">批次</label>
         <div class="layui-input-block">
-            <input type="text" lay-verify="title" name="cosName" id="getCosName"
+            <input type="text" lay-verify="title" name="groupName" id="getGroupName"
                    autocomplete="off" placeholder="请输入名称" class="layui-input">
             </input>
         </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="beginTime"
+                       id="getBeginTime" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">结束时间</label>
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input" name="endTime"
+                       id="getEndTime" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <select name="city" lay-verify="" id="setCouName">
+            <option value="">设置该批次课程</option>
+        </select>
     </div>
 
     <div class="layui-form-item">
@@ -47,20 +72,8 @@
             </div>
         </div>
     </div>
-
-    <button type="button" class="layui-btn" id="test1">
-        <i class="layui-icon">&#xe67c;</i>上传文件
-        <!--<input type="file" class="layui-btn" name="file" id="upfile" />-->
-    </button>
 </form>
-<!--设置课件 end-->
-<!--设置课件所属课程-->
-<form class="layui-form" action="" id="imp" style="display: none">
-    <select name="city" lay-verify="" id="setCouName">
-        <option value="">设置所属课程</option>
-    </select>
-</form>
-<!--设置课件所属课程 end-->
+<!--测试代码 end-->
 <script src="./plugins/layui/layui.js"></script>
 <!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
 <script src="js/jquery.min.js"></script>
@@ -68,37 +81,21 @@
 <script>
     //<![CDATA[
     var host=getContextPath();
-    var height=window.screen.availHeight-280;
-    $.ajax({
-        url:host+'/course/getList',
-        data:{
-            limit:100
-        },
-        type:'post',
-        success:function (json) {
-            if(json.success){
-                var text="";
-                $.each(json.rows,function (index,domEle) {
-                    text+="<option value=\'"+domEle.couid+"\'>"+
-                        domEle.couName+"</option>\n";
-                });
-                $("#setCouName").append(text);
-            }
-        }
-    });
     layui.use('table', function() {
         var table = layui.table;
 
-        var coursewareTable=table.render({
-            elem: '#coursewareTable' //指定原始表格元素选择器（推荐id选择器）
-            ,height: height //容器高度
-            ,url: host+'/courseware/getList'
+        var groupTable=table.render({
+            elem: '#groupTable' //指定原始表格元素选择器（推荐id选择器）
+            ,height: '400' //容器高度
+            ,url: host+'/group/getList'
             ,cols:[[
-                {field:'cosid', width:120, sort: true,title:'课件ID'}
-                ,{field:'cosName', width:120,title:'课件名'}
-                ,{field:'couName', width:120,title:'所属课程'}
-                ,{field:'cosUploadTime', width:120,title:'上传时间'}
-                ,{field:'notes', width:200,title:'备注'}
+                {field:'groupid', width:120, sort: true,title:'用户ID'}
+                ,{field:'groupName', width:120,title:'批次'}
+                ,{field:'beginTime', width:120,title:'开始时间'}
+                ,{field:'endTime', width:120,title:'结束时间'}
+                ,{field:'couid', width:177,title:'课程id'}
+                ,{field:'couName', width:120,title:'课程名称'}
+                ,{field:'notes', width:120,title:'备注'}
                 ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
             ]]
             ,response: {
@@ -109,7 +106,7 @@
                 ,dataName: 'rows' //数据列表的字段名称，默认：data
             }
             /*,initSort: {
-                field: 'cosid' //排序字段，对应 cols 设定的各字段名
+                field: 'groupid' //排序字段，对应 cols 设定的各字段名
                 ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
             }*/
             ,page: true
@@ -119,37 +116,39 @@
 
         });
 
-        //条件查询
+        var
+
+        //查询
         $("#search").click(function () {
 
-            var cosnameInput=$("#cosnameInput").val();
-            var counameInput=$("#counameInput").val();
-            if(cosnameInput!=null && cosnameInput!=""&&counameInput!=null&&counameInput!=""){
-                coursewareTable.reload({
+            var searchGroupName=$("#searchGroupName").val();
+            var searchCouName=$("#searchCouName").val();
+            if(searchGroupName!=null && searchGroupName!=""&&searchCouName!=null&&searchCouName!=""){
+                groupTable.reload({
                     where:{
-                        cosName:cosnameInput,
-                        couName:counameInput
+                        groupName:searchGroupName,
+                        couName:searchCouName
                     }
                 });
-            }else if(cosnameInput!=null && cosnameInput!=""&&(counameInput==null||counameInput=="")){
-                coursewareTable.reload({
+            }else if(searchGroupName!=null && searchGroupName!=""&&(searchCouName==null||searchCouName=="")){
+                groupTable.reload({
                     where:{
-                        cosName:cosnameInput
+                        groupName:searchGroupName
                     }
                 });
-            }else if(cosnameInput==null||cosnameInput==""&&(counameInput!=null&&counameInput!="")){
-                coursewareTable.reload({
+            }else if(searchGroupName==null||searchGroupName==""&&(searchCouName!=null&&searchCouName!="")){
+                groupTable.reload({
                     where:{
-                        couName:counameInput
+                        couName:searchCouName
                     }
                 });
             }else{
-                coursewareTable.reload({
+                groupTable.reload({
                     where:{
                     }
                 });
             }
-            //]]>
+
         });
 
         table.on('tool(test)', function(obj){
@@ -159,9 +158,9 @@
             var tr = obj.tr; //获得当前行 tr 的DOM对象
             var text='<div style="padding: 50px; line-height: 22px; ' +
                 'background-color: #393D49; color: #fff; font-weight: 300;">';
-            text+='模块id：'+data.cosid+'<br/>课件名称：'+data.cosName+'<br/><br/>上传时间：';
-            text+=data.cosUploadTime+'<br/><br/>时长：'+data.couDuration;
-            text+='<br/><br/>备注：'+data.notes;
+            text+='批次id：'+data.groupid+'<br/>批次：'+data.groupName+'<br/><br/>开始时间：';
+            text+=data.beginTime+'<br/><br/>结束时间：'+data.endTime+'<br/><br/>用户名：';
+            text+=data.couName+'<br/><br/>用户id：'+data.couid;
             text+='</div>';
             if(layEvent === 'detail'){ //查看
                 layui.use('layer', function() { //独立版的layer无需执行这一句
@@ -180,7 +179,7 @@
                             var btn = layero.find('.layui-layer-btn');
                             btn.css('text-align', 'center');
                             btn.find('.layui-layer-btn0').attr({
-                                href: 'http://www.baidu.com/'
+                                href: 'http://www..com/'
                                 , target: '_blank'
                             });
                         }
@@ -191,8 +190,8 @@
 
                     //向服务端发送删除指令
                     $.ajax({
-                        url:host + '/courseware/delete',
-                        data:{cosid:data.cosid},
+                        url:host + '/group/delete',
+                        data:{groupid:data.groupid},
                         success:function (json) {
                             layer.close(index);
                             if (json.success) {
@@ -228,9 +227,10 @@
                     });
                 });
             } else if(layEvent === 'edit'){ //编辑
-                $("#getCosName").val(data.cosName);
-                $("#getCosUploadTime").val(data.cosUploadTime);
-                $("#getCouDuration").val(data.couDuration);
+                $("#getGroupName").val(data.groupName);
+                $("#getCouName").val(data.couName);
+                $("#getBeginTime").val(data.beginTime);
+                $("#getEndTime").val(data.endTime);
                 $("#getNotes").val(data.notes);
                 layui.use('layer', function() {
                     var layer = layui.layer;
@@ -242,11 +242,14 @@
                         yes: function(index, layero) {
                             //按钮【按钮一】的回调
                             var a = new Object();
-                            a.cosName = $("#getCosName").val();
+                            a.groupName = $("#getGroupName").val();
+                            a.beginTime = $("#getBeginTime").val();
+                            a.endTime = $("#getEndTime").val();
+                            a.couName = $("#getCouName").val();
                             a.notes = $("#getNotes").val();
-                            a.cosid = data.cosid;
+                            a.groupid = $("#getGroupid").val();
                             $.ajax({
-                                url: host + '/courseware/modify',
+                                url: host + '/group/modify',
                                 data: a,
                                 success: function (json) {
                                     layer.close(index);
@@ -260,7 +263,11 @@
                                             , btnAlign: 'c' //按钮居中
                                             , shade: 0 //不显示遮罩
                                             , yes: function () {
-                                                $("#getCosName").val("");
+                                                $("#getGroupName").val("");
+                                                $("#getCouName").val("");
+                                                $("#getBeginTime").val("");
+                                                $("#getEndTime").val("");
+                                                $("#getGroupid").val("");
                                                 $("#getNotes").val("");
 
                                                 layer.closeAll();
@@ -270,8 +277,12 @@
                                         console.log(data);
                                         console.log(obj.update);
                                         obj.update({
-                                            cosName: a.cosName
+                                            groupName: a.groupName
+                                            ,beginTime: a.beginTime
+                                            ,endTime: a.endTime
+                                            ,couName: a.couName
                                             ,notes: a.notes
+                                            ,groupid: a.groupid
                                         });
                                     } else {
                                         layer.open({
@@ -283,7 +294,11 @@
                                             , btnAlign: 'c' //按钮居中
                                             , shade: 0 //不显示遮罩
                                             , yes: function () {
-                                                $("#getCosName").val("");
+                                                $("#getGroupName").val("");
+                                                $("#getCouName").val("");
+                                                $("#getBeginTime").val("");
+                                                $("#getEndTime").val("");
+                                                $("#getGroupid").val("");
                                                 $("#getNotes").val("");
                                                 layer.closeAll();
                                             }
@@ -294,106 +309,14 @@
                         }
                     });
                 });
-            }else if(layEvent=='setCou'){ //设置所属课程
-                layui.use(['layer','form'], function(){
-                    layer.open({
-                        title:'编辑所属课程',
-                        type: 1,
-                        btn: ['确定','取消'],
-                        content:$("#imp"),
-                        area:['500px', '300px'],
-                        yes: function(index, layero) {
-                            var couid=$("#setCouName option:selected").val();
-                            $.ajax({
-                                url:host + '/courseware/modify',
-                                data:{
-                                    cosid:data.cosid,
-                                    couid:couid
-                                },
-                                type:'post',
-                                success:function (json) {
-                                    layer.close(index);
-                                    if (json.success) {
-                                        layer.open({
-                                            type: 1
-                                            , offset: 'rb'
-                                            , id: 'editSuccess'
-                                            , content: json.msg
-                                            , btn: '关闭全部'
-                                            , btnAlign: 'c' //按钮居中
-                                            , shade: 0 //不显示遮罩
-                                            , yes: function () {
-
-                                                layer.closeAll();
-                                            }
-                                        });
-                                        //同步更新缓存对应的值
-                                        console.log(data);
-                                        console.log(obj.update);
-                                        obj.update({
-                                            couName: a.couName
-                                        });
-                                    } else {
-                                        layer.open({
-                                            type: 1
-                                            , offset: 'rb'
-                                            , id: 'editFail'
-                                            , content: json.msg
-                                            , btn: '关闭全部'
-                                            , btnAlign: 'c' //按钮居中
-                                            , shade: 0 //不显示遮罩
-                                            , yes: function () {
-                                                layer.closeAll();
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                });
             }
         });
 
-    });
-
-    //设置上传
-    layui.use('upload', function(){
-        var upload = layui.upload;
-
-        //执行实例
-        var uploadInst = upload.render({
-            elem: '#test1' //绑定元素
-            ,url: host+'/courseware/fileAdd' //上传接口
-            ,multiple:true
-            ,accept:'file'
-            ,choose:function(obj){
-
-            }
-            ,before:function (obj) {
-                layer.load();
-            }
-            ,done: function(json){
-                //上传完毕回调
-                layer.closeAll('loading');
-                if(json.success){
-                    alert("上传成功！！");
-                    $("#getNotes").val(json.msg);
-                }else{
-                    alert("上传失败！！");
-                }
-            }
-            ,error: function(){
-                //请求异常回调
-                layer.closeAll('loading');
-            }
-        });
 
         //添加按钮
         $("#add").click(function () {
             layui.use('layer', function() {
                 var layer = layui.layer;
-
                 layer.open({
                     title:'添加',
                     type: 1,
@@ -401,24 +324,21 @@
                     yes: function(index, layero){
                         //按钮【按钮一】的回调
                         var obj=new Object();
-                        var cosName=$("#getCosName").val();
-                        var notes=$("#getNotes").val();
-                        obj.cosName=cosName;
-                        obj.notes=notes;
+                        obj.groupName=$("#getGroupName").val();
+                        obj.beginTime=$("#getBeginTime").val();
+                        obj.endTime=$("#getEndTime").val();
+                        obj.couName=$("#getCouName").val();
+                        obj.notes=$("#getNotes").val();
+                        obj.groupid=$("#getGroupid").val();
                         $.ajax({
-                            url:host+'/courseware/add',
+                            url:host+'/group/add',
                             data:obj,
-                            type:'post',
-                            beforeSend:function(){
-                                console.log("正在进行，请稍候");
-                            },
                             success:function (json) {
                                 layer.close(index);
                                 if(json.success){
                                     layer.open({
                                         type: 1
                                         ,offset: 'rb'
-                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
                                         ,id: 'addSuccess'
                                         ,content: json.msg
                                         ,btn: '关闭全部'
@@ -432,7 +352,6 @@
                                     layer.open({
                                         type: 1
                                         ,offset: 'rb'
-                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
                                         ,id: 'addFail'
                                         ,content: json.msg
                                         ,btn: '关闭全部'
@@ -454,7 +373,7 @@
                     content:$("#hidden")
                 });
             });
-            coursewareTable.reload({
+            groupTable.reload({
                 where:{
 
                 }
@@ -464,12 +383,11 @@
 
 
 
-
+    //]]>
 </script>
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
-    <a class="layui-btn layui-btn-mini" lay-event="setCou">设置所属课程</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
 
     <!-- 这里同样支持 laytpl 语法，如： -->
@@ -478,5 +396,4 @@
     {{#  } }}
 </script>
 </body>
-
 </html>
