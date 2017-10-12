@@ -37,7 +37,7 @@ public class UserController extends BaseController {
 
     @RequestMapping("/dologin")
     public String dologin(){
-        return "index2";
+        return "index";
     }
 
     @RequestMapping("/selectModel")

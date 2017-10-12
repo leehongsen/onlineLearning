@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <title>课程管理</title>
     <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
+    <link rel="stylesheet" href="//releases.flowplayer.org/7.1.2/skin/skin.css" />
+    <link rel="stylesheet" href="./css/js.css" />
+    <script src="./js/flowplayer.min.js"></script>
 </head>
 
 <body>
@@ -34,27 +37,74 @@
     </div>
 
     <div class="layui-form-item">
-        <div class="layui-inline">
-            <label class="layui-form-label">备注</label>
-            <div class="layui-input-block">
-                <input type="text" name="notes" lay-verify="title" id="getNotes"
-                       autocomplete="off" class="layui-input" placeholder="请输入备注">
-                </input>
-            </div>
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <input type="text" name="notes" lay-verify="title" id="getNotes"
+                   autocomplete="off" class="layui-input" placeholder="请输入备注">
+            </input>
         </div>
     </div>
 
     <button type="button" class="layui-btn" id="test1">
-        <i class="layui-icon">&#xe67c;</i>上传文件
+        <i class="layui-icon">&#xe67c;</i>上传文件（可以多个）
         <!--<input type="file" class="layui-btn" name="file" id="upfile" />-->
     </button>
+
+    <div class="layui-upload-list">
+        <table class="layui-table">
+            <thead>
+            <tr><th>文件名</th>
+                <th>大小</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr></thead>
+            <tbody id="demoList"></tbody>
+        </table>
+    </div>
+
+    <button type="button" class="layui-btn" id="testListAction">开始上传</button>
 </form>
 <!--测试代码 end-->
+<!--播放列表-->
+<div id="content" style="display: none">
+    <div id="jsplaylistdemo">
+        <div id="jscontainer">
+            <div id="jsplaylistdemovideos" class="show">
+
+                <p class="notes">
+                    以下每个框提供视频的标题和索命。 您可以选择视频，然后按
+                    “加载播放列表”按钮以播放从你的选择列表载入的视频。
+                </p>
+
+                <h2>选择视频到播放列表</h2>
+                <ul id="list">
+
+                </ul>
+                <a id="loadPlaylist" class="button">加载视频 &raquo;</a>
+            </div>
+
+
+            <div id="jsvideocontainer">
+                <!--
+                Empty container, all videos come from
+                javascript playlist configuration.
+                -->
+                <div id="jsplaylist">
+                    <a class="fp-prev">Prev</a>
+                    <a class="fp-next">Next</a>
+                </div>
+                <a id="selectPlaylist" class="button">&laquo; 更换播放列表</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--播放列表 end-->
 <script src="./plugins/layui/layui.js"></script>
 <!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
 <script src="js/jquery.min.js"></script>
 <script src="js/getLocalHost.js"></script>
 <script>
+    //<![CDATA[
     var host=getContextPath();
     var height=window.screen.availHeight-280;
     layui.use('table', function() {
@@ -70,7 +120,7 @@
                 ,{field:'couUploadTime', width:120,title:'上传时间'}
                 ,{field:'couDuration', width:120,sort:true,title:'时长'}
                 ,{field:'notes', width:200,title:'备注'}
-                ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
+                ,{fixed:'right', width:240, align:'center', toolbar: '#barDemo'}
             ]]
             ,response: {
                 statusName: 'success', //数据状态的字段名称，默认：code
@@ -92,7 +142,7 @@
 
         //条件查询
         $("#search").click(function () {
-            //<![CDATA[
+
             var search=$("#searchInput").val();
             if(search!=null && search!=""){
                 courseTable.reload({
@@ -107,7 +157,7 @@
                 });
 
             }
-            //]]>
+
         });
 
         table.on('tool(test)', function(obj){
@@ -252,6 +302,130 @@
                         }
                     });
                 });
+            }else if(layEvent === 'look'){     //查看视频
+                $("#list").empty();
+                var r=data.notes.split('-');
+                var allVideos=new Array();
+                var sources=new Array();
+                var bigObj=new Array();
+                $.each(r,function (index,domEle) {
+                    var t="<li><h3>"+(index+1)+"</h3><p>"+domEle+"</p></li>";
+                    $("#list").append(t);
+                    sources[index]=new Array();
+                    var obj=new Object();
+                    obj.type='video/mp4';
+                    obj.src="video/"+domEle;
+                    sources[index].push(obj);
+                    bigObj[index]=new Object();
+                    bigObj[index].sources=sources[index];
+                    allVideos.push(bigObj[index]);
+                });
+                /*var allVideos = [{
+                    sources: [ {
+                        type: 'video/mp4',
+                        src:  "//edge.flowplayer.org/night7.mp4"
+                    }]
+                }, {
+                    sources: [{
+                        type: 'video/mp4',
+                        src:  "//edge.flowplayer.org/night5.mp4"
+                    }]
+                }, {
+                    sources:[ {
+                        type: 'video/mp4',
+                        src:  "//edge.flowplayer.org/night6.mp4"
+                    }]
+                }, {
+                    sources: [ {
+                        type: 'video/mp4',
+                        src:  "//edge.flowplayer.org/night4.mp4"
+                    }]
+                }];*/
+
+                var jsPlaylistApi;
+
+                var clipSelector = document.getElementById("jsplaylistdemovideos"),
+                    clipFields = clipSelector.getElementsByTagName("li"),
+                    playerWrapper = document.getElementById("jsvideocontainer"),
+                    i;
+
+                var refreshPlaylist = function() {
+
+                    var playlistVideos = [], i;
+
+                    for (i = 0;i<clipFields.length;i++) {
+                        if (clipFields[i].className == "selected") {
+                            playlistVideos.push(allVideos[i]);
+                        }
+                    }
+
+                    if (!playlistVideos.length) {
+                        return false;
+                    }
+
+                    if (!jsPlaylistApi) { // initial load
+                        /*
+                        install the player and get handle on its api
+
+                        the player must be unloadable because it will be hidden
+                        on playlist refresh: use a splash setup
+                        */
+
+                        jsPlaylistApi = flowplayer('#jsplaylist', {
+                            ratio: 9/16,
+                            customPlaylist: true,
+                            playlist: playlistVideos,
+                            splash: true,
+                            rtmp: {
+                                url: "rtmp://s3b78u0kbtx79q.cloudfront.net/cfx/st"
+                            }
+                        });
+
+                    } else {
+                        jsPlaylistApi.setPlaylist(playlistVideos);
+                    }
+
+                    return true;
+                };
+
+
+                for (i = 0; i < clipFields.length; i += 1) {
+                    // retrieve clip titles dynamically from page
+                    allVideos[i].title = clipFields[i].getElementsByTagName("h3")[0].innerHTML;
+
+                    clipFields[i].onclick = function () {
+                        if (this.className == "selected") {
+                            this.removeAttribute("class");
+                        } else {
+                            this.className = "selected";
+                        }
+                    };
+                }
+
+                document.getElementById("loadPlaylist").onclick = function () {
+                    if (refreshPlaylist()) {
+                        playerWrapper.className = "show";
+                        clipSelector.removeAttribute("class");
+                        jsPlaylistApi.play(0);
+                    }
+                };
+
+                document.getElementById("selectPlaylist").onclick = function () {
+                    jsPlaylistApi.unload();
+                    playerWrapper.removeAttribute("class");
+                    clipSelector.className = "show";
+                };
+
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    layer.open({
+                        title: '查看视频',
+                        type: 1,
+                        btn: ['确定', '取消'],
+                        content: $("#content"),
+                        area:["800px","800px"]
+                    });
+                });
             }
         });
 
@@ -260,32 +434,60 @@
     //设置上传
     layui.use('upload', function(){
         var upload = layui.upload;
-
+        var demoListView = $('#demoList')
         //执行实例
         var uploadInst = upload.render({
             elem: '#test1' //绑定元素
             ,url: host+'/course/fileAdd' //上传接口
             ,multiple:true
+            ,auto:false
             ,accept:'video'
-            ,choose:function(obj){
+            ,bindAction: '#testListAction'
+            ,choose: function(obj){
+                var files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                //读取本地文件
+                obj.preview(function(index, file, result){
+                    var tr = $(['<tr id="upload-'+ index +'">'
+                        ,'<td>'+ file.name +'</td>'
+                        ,'<td>'+ (file.size/1014).toFixed(1) +'kb</td>'
+                        ,'<td>等待上传</td>'
+                        ,'<td>'
+                        ,'<button class="layui-btn layui-btn-mini demo-reload layui-hide">重传</button>'
+                        ,'<button class="layui-btn layui-btn-mini layui-btn-danger demo-delete">删除</button>'
+                        ,'</td>'
+                        ,'</tr>'].join(''));
+                    //单个重传
+                    tr.find('.demo-reload').on('click', function(){
+                        obj.upload(index, file);
+                    });
 
+                    //删除
+                    tr.find('.demo-delete').on('click', function(){
+                        delete files[index]; //删除对应的文件
+                        tr.remove();
+                    });
+
+                    demoListView.append(tr);
+                });
             }
-            ,before:function (obj) {
-                layer.load();
-            }
-            ,done: function(json){
-                //上传完毕回调
-                layer.closeAll('loading');
-                if(json.success){
-                    alert("上传成功！！");
-                    $("#getNotes").val(json.msg);
-                }else{
-                    alert("上传失败！！");
+            ,done: function(res, index, upload){
+                if(res.success){ //上传成功
+                    var tr = demoListView.find('tr#upload-'+ index)
+                        ,tds = tr.children();
+                    tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
+                    tds.eq(3).html(''); //清空操作
+                    //delete files[index]; //删除文件队列已经上传成功的文件
+                    $("#getNotes").val(res.msg);
+                    return;
                 }
+
+                this.error(index, upload);
             }
-            ,error: function(){
-                //请求异常回调
-                layer.closeAll('loading');
+            ,error: function(index, upload){
+                var tr = demoListView.find('tr#upload-'+ index)
+                    ,tds = tr.children();
+                tds.eq(2).html('<span style="color: #FF5722;">上传失败</span>');
+                tds.eq(3).find('.demo-reload').removeClass('layui-hide'); //显示重传
             }
         });
 
@@ -326,6 +528,7 @@
                                         ,shade: 0 //不显示遮罩
                                         ,yes: function(){
                                             layer.closeAll();
+                                            location.reload();
                                         }
                                     });
                                 }else {
@@ -354,15 +557,9 @@
                     content:$("#hidden")
                 });
             });
-            courseTable.reload({
-                where:{
-
-                }
-            });
         });
     });
-
-
+    //]]>
 
 
 </script>
@@ -370,12 +567,10 @@
     <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
     <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-mini" lay-event="look">查看视频</a>
 
-    <!-- 这里同样支持 laytpl 语法，如： -->
-    {{#  if(d.auth > 2){ }}
-    <a class="layui-btn layui-btn-mini" lay-event="check">审核</a>
-    {{#  } }}
 </script>
+
 </body>
 
 </html>

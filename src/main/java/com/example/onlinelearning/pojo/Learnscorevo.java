@@ -11,6 +11,8 @@ public class Learnscorevo {
 
     private String couName;
 
+    private Integer scores;
+
     public Integer getScoid() {
         return scoid;
     }
@@ -49,5 +51,13 @@ public class Learnscorevo {
 
     public void setCouName(String couName) {
         this.couName = couName == null ? null : couName.trim();
+    }
+
+    public Integer getScores() {
+        return scores;
+    }
+
+    public void setScores(Integer scores) {
+        this.scores = scores;
     }
 }

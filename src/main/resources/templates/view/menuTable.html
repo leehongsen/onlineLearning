@@ -86,7 +86,7 @@
     <script src="js/getLocalHost.js"></script>
     <script>
         var host=getContextPath();
-        var height=window.screen.availHeight-280;
+        var height=window.screen.availHeight-275;
         layui.use('table', function() {
             var table = layui.table;
 
@@ -342,6 +342,7 @@
                                             ,shade: 0 //不显示遮罩
                                             ,yes: function(){
                                                 layer.closeAll();
+                                                location.reload();
                                             }
                                         });
 
@@ -371,11 +372,7 @@
                         content:$("#hidden")
                     });
                 });
-                menuTable.reload({
-                    where:{
 
-                    }
-                });
             });
         });
 

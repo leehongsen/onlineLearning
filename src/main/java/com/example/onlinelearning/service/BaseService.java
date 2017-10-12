@@ -1,7 +1,5 @@
 package com.example.onlinelearning.service;
 
-import com.example.onlinelearning.pojo.Learnscorevo;
-
 import java.util.List;
 import java.util.Map;
 

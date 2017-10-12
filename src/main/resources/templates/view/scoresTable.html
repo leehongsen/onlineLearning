@@ -1,10 +1,411 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" />
+    <title>分数管理</title>
+    <link rel="stylesheet" href="./plugins/layui/css/layui.css" media="all" />
 </head>
+
 <body>
 
+<div class="demoTable" style="margin-top: 8px">
+    <button class="layui-btn" id="add">
+        <i class="layui-icon">&#xe608;</i> 添加
+    </button>
+    搜索学生：
+    <div class="layui-inline">
+        <input class="layui-input" name="username" id="usernameInput" autocomplete="off"></input>
+    </div>
+    搜索所属课程：
+    <div class="layui-inline">
+        <input class="layui-input" name="couname" id="counameInput" autocomplete="off"></input>
+    </div>
+    <button class="layui-btn" data-type="reload" id="search">搜索</button>
+</div>
+<table class="layui-table"  lay-filter="test" id="scoresTable">
+
+</table>
+<!--设置课件-->
+<form class="layui-form" action="" id="hidden" style="display: none">
+    <div class="layui-form-item">
+        <label class="layui-form-label">课程名</label>
+        <div class="layui-input-block">
+            <select name="city" lay-verify="" id="setCouName">
+                <option value="">设置所属课程</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">设置学生</label>
+            <div class="layui-input-block">
+                <select name="city" lay-verify="" id="setUsername">
+                    <option value="">设置学生</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">成绩</label>
+        <div class="layui-input-block">
+            <input type="text" lay-verify="title" name="scores" id="getScores"
+                   autocomplete="off" placeholder="请输入成绩" class="layui-input">
+            </input>
+        </div>
+    </div>
+
+</form>
+<!--设置课件 end-->
+
+<script src="./plugins/layui/layui.js"></script>
+<!--手动设置js，第一个是获取当前项目路径，第二个是设置功能按钮-->
+<script src="js/jquery.min.js"></script>
+<script src="js/getLocalHost.js"></script>
+<script>
+    //<![CDATA[
+    var host=getContextPath();
+    var height=window.screen.availHeight-275;
+    $.ajax({
+        url:host+'/course/getList',
+        data:{
+            limit:100
+        },
+        type:'post',
+        success:function (json) {
+            if(json.success){
+                var text="";
+                $.each(json.rows,function (index,domEle) {
+                    text+="<option value=\'"+domEle.couid+"\'>"+
+                        domEle.couName+"</option>\n";
+                });
+                $("#setCouName").append(text);
+            }
+        }
+    });
+
+    $.ajax({
+        url:host+'/users/getList',
+        data:{
+            limit:100
+        },
+        type:'post',
+        success:function (json) {
+            if(json.success){
+                var text="";
+                $.each(json.rows,function (index,domEle) {
+                    text+="<option value=\'"+domEle.userid+"\'>"+
+                        domEle.username+"</option>\n";
+                });
+                $("#setUsername").append(text);
+            }
+        }
+    });
+    layui.use('table', function() {
+        var table = layui.table;
+
+        var scoresTable=table.render({
+            elem: '#scoresTable' //指定原始表格元素选择器（推荐id选择器）
+            ,height: height //容器高度
+            ,url: host+'/scores/getList'
+            ,cols:[[
+                {field:'scoid', width:120, sort: true,title:'成绩ID'}
+                ,{field:'username', width:120,title:'学生名'}
+                ,{field:'couName', width:120,title:'所属课程'}
+                ,{field:'scores', width:120,title:'成绩'}
+                ,{field:'userid', width:120,title:'学生id'}
+                ,{field:'couid', width:120,title:'课程id'}
+                ,{fixed:'right', width:200, align:'center', toolbar: '#barDemo'}
+            ]]
+            ,response: {
+                statusName: 'success', //数据状态的字段名称，默认：code
+                statusCode: true //成功的状态码，默认：0
+                //,msgName: 'hint' //状态信息的字段名称，默认：msg
+                ,countName: 'total' //数据总数的字段名称，默认：count
+                ,dataName: 'rows' //数据列表的字段名称，默认：data
+            }
+            /*,initSort: {
+                field: 'scoid' //排序字段，对应 cols 设定的各字段名
+                ,type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+            }*/
+            ,page: true
+            ,limits: [10,30,60,90,150,300]
+            ,limit: 10 //默认采用60
+            ,id:'idTest'
+
+        });
+
+        //条件查询
+        $("#search").click(function () {
+
+            var usernameInput=$("#usernameInput").val();
+            var counameInput=$("#counameInput").val();
+            if(usernameInput!=null && usernameInput!=""&&counameInput!=null&&counameInput!=""){
+                scoresTable.reload({
+                    where:{
+                        username:usernameInput,
+                        couName:counameInput
+                    }
+                });
+            }else if(usernameInput!=null && usernameInput!=""&&(counameInput==null||counameInput=="")){
+                scoresTable.reload({
+                    where:{
+                        username:usernameInput
+                    }
+                });
+            }else if(usernameInput==null||usernameInput==""&&(counameInput!=null&&counameInput!="")){
+                scoresTable.reload({
+                    where:{
+                        couName:counameInput
+                    }
+                });
+            }else{
+                scoresTable.reload({
+                    where:{
+                    }
+                });
+            }
+            //]]>
+        });
+
+        table.on('tool(test)', function(obj){
+            //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+            var tr = obj.tr; //获得当前行 tr 的DOM对象
+            var text='<div style="padding: 50px; line-height: 22px; ' +
+                'background-color: #393D49; color: #fff; font-weight: 300;">';
+            text+='成绩id：'+data.scoid+'<br/>学生名：'+data.username+'<br/><br/>成绩：';
+            text+=data.scores+'<br/><br/>所属课程：'+data.couName;
+            text+='</div>';
+            if(layEvent === 'detail'){ //查看
+                layui.use('layer', function() { //独立版的layer无需执行这一句
+                    var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+                    layer.open({
+                        type: 1
+                        ,title: false //不显示标题栏
+                        ,closeBtn: false
+                        ,area: '300px;'
+                        ,shade: 0.8
+                        ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                        ,btn: ['百度一下', '确定']
+                        ,moveType: 1 //拖拽模式，0或者1
+                        ,content: text
+                        ,success: function (layero) {
+                            var btn = layero.find('.layui-layer-btn');
+                            btn.css('text-align', 'center');
+                            btn.find('.layui-layer-btn0').attr({
+                                href: 'http://www.baidu.com/'
+                                , target: '_blank'
+                            });
+                        }
+                    });
+                });
+            } else if(layEvent === 'del'){ //删除
+                layer.confirm('真的删除行么', function(index){
+
+                    //向服务端发送删除指令
+                    $.ajax({
+                        url:host + '/scores/delete',
+                        data:{scoid:data.scoid},
+                        success:function (json) {
+                            layer.close(index);
+                            if (json.success) {
+                                layer.open({
+                                    type: 1
+                                    , offset: 'rb'
+                                    , id: 'delSuccess'
+                                    , content: json.msg
+                                    , btn: '关闭全部'
+                                    , btnAlign: 'c' //按钮居中
+                                    , shade: 0 //不显示遮罩
+                                    , yes: function () {
+                                        layer.closeAll();
+                                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                                        layer.close(index);
+                                    }
+                                });
+                            } else {
+                                layer.open({
+                                    type: 1
+                                    , offset: 'rb'
+                                    , id: 'delFail'
+                                    , content: json.msg
+                                    , btn: '关闭全部'
+                                    , btnAlign: 'c' //按钮居中
+                                    , shade: 0 //不显示遮罩
+                                    , yes: function () {
+                                        layer.closeAll();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                $("#setUsername").val(data.userid);
+                $("#setCouName").val(data.couid);
+                $("#getScores").val(data.scores);
+                layui.use('layer', function() {
+                    var layer = layui.layer;
+                    layer.open({
+                        title:'编辑',
+                        type: 1,
+                        btn: ['确定','取消'],
+                        area:['400px','300px'],
+                        content:$("#hidden"),
+                        yes: function(index, layero) {
+                            //按钮【按钮一】的回调
+                            var a = new Object();
+                            a.userid = $("#setUsername").val();
+                            a.notes = $("#getNotes").val();
+                            a.couid=$("#setCouName").val();
+                            a.scores=$("#getScores").val();
+                            a.scoid = data.scoid;
+                            $.ajax({
+                                url: host + '/scores/modify',
+                                data: a,
+                                success: function (json) {
+                                    layer.close(index);
+                                    if (json.success) {
+                                        layer.open({
+                                            type: 1
+                                            , offset: 'rb'
+                                            , id: 'editSuccess'
+                                            , content: json.msg
+                                            , btn: '关闭全部'
+                                            , btnAlign: 'c' //按钮居中
+                                            , shade: 0 //不显示遮罩
+                                            , yes: function () {
+                                                $("#setUsername").val("");
+                                                $("#setCouName").val("");
+                                                $("#getScores").val("");
+                                                layer.closeAll();
+                                            }
+                                        });
+                                        //同步更新缓存对应的值
+                                        console.log(data);
+                                        console.log(obj.update);
+                                        obj.update({
+                                            username: a.username
+                                            ,notes: a.notes
+                                        });
+                                    } else {
+                                        layer.open({
+                                            type: 1
+                                            , offset: 'rb'
+                                            , id: 'editFail'
+                                            , content: json.msg
+                                            , btn: '关闭全部'
+                                            , btnAlign: 'c' //按钮居中
+                                            , shade: 0 //不显示遮罩
+                                            , yes: function () {
+                                                $("#setUsername").val("");
+                                                $("#setCouName").val("");
+                                                $("#getScores").val("");
+                                                layer.closeAll();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+        //添加按钮
+        $("#add").click(function () {
+            layui.use('layer', function() {
+                var layer = layui.layer;
+
+                layer.open({
+                    title:'添加',
+                    type: 1,
+                    btn: ['确定','取消'],
+                    area:['400px','300px'],
+                    yes: function(index, layero){
+                        //按钮【按钮一】的回调
+                        var obj=new Object();
+                        var userid=$("#setUsername").val();
+                        var couid=$("#setCouName").val();
+                        var scores=$("#getScores").val();
+                        obj.userid=userid;
+                        obj.couid=couid;
+                        obj.scores=scores;
+                        $.ajax({
+                            url:host+'/scores/add',
+                            data:obj,
+                            type:'post',
+                            beforeSend:function(){
+                                console.log("正在进行，请稍候");
+                            },
+                            success:function (json) {
+                                layer.close(index);
+                                if(json.success){
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addSuccess'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                            location.reload();
+                                        }
+                                    });
+                                }else {
+                                    layer.open({
+                                        type: 1
+                                        ,offset: 'rb'
+                                        //具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                                        ,id: 'addFail'
+                                        ,content: json.msg
+                                        ,btn: '关闭全部'
+                                        ,btnAlign: 'c' //按钮居中
+                                        ,shade: 0 //不显示遮罩
+                                        ,yes: function(){
+                                            layer.closeAll();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                    ,btn2: function(index, layero){
+                        //按钮【按钮二】的回调
+
+                        //return false 开启该代码可禁止点击该按钮关闭
+                    },
+                    content:$("#hidden")
+                });
+            });
+
+        });
+    });
+
+
+
+
+
+
+
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+
+    <!-- 这里同样支持 laytpl 语法，如： -->
+    {{#  if(d.auth > 2){ }}
+    <a class="layui-btn layui-btn-mini" lay-event="check">审核</a>
+    {{#  } }}
+</script>
 </body>
+
 </html>

@@ -1,6 +1,8 @@
 package com.example.onlinelearning.controller;
 
+import com.example.onlinelearning.pojo.Learnscorevo;
 import com.example.onlinelearning.pojo.Scores;
+import com.example.onlinelearning.service.Impl.ScoresServiceImpl;
 import com.example.onlinelearning.service.ScoresService;
 import com.example.onlinelearning.utils.Json;
 import com.example.onlinelearning.utils.PageResult;
@@ -14,10 +16,10 @@ import java.util.Map;
 @RequestMapping("/scores")
 public class ScoresController extends BaseController {
     @Autowired
-    private ScoresService scoresService;
+    private ScoresServiceImpl scoresService;
 
     @RequestMapping("/getList")
-    public PageResult getMenuList(Integer page, Integer limit, Scores scores){
+    public PageResult getMenuList(Integer page, Integer limit, Learnscorevo scores){
         PageResult pr = new PageResult();
         Map<String, Object> map = super.getSearchMap(page, limit, scores);
         pr.setTotal(scoresService.getTotal(scores));
@@ -56,8 +58,8 @@ public class ScoresController extends BaseController {
     }
 
     @RequestMapping("/delete")
-    public Json deleteModel(String scores){
-        String[] modelids=scores.split(",");
+    public Json deleteModel(String scoid){
+        String[] modelids=scoid.split(",");
 
         Integer r=scoresService.delete(modelids);
         Json json=new Json();

@@ -55,7 +55,7 @@ public class CourseController extends BaseController{
                             new File(filepath+file.getOriginalFilename())));
                     stream.write(bytes);
                     stream.close();
-                    notes+=file.getOriginalFilename()+"-";
+                    notes+=(file.getOriginalFilename()+"-");
                 } catch (Exception e) {
                     stream = null;
                     json.setSuccess(false);
@@ -70,6 +70,7 @@ public class CourseController extends BaseController{
         }
         json.setSuccess(true);
         json.setMsg(notes);
+        System.out.println(notes);
         return json;
     }
 

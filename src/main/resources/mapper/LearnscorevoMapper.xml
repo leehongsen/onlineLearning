@@ -7,6 +7,7 @@
     <result column="couid" jdbcType="INTEGER" property="couid" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="couName" jdbcType="VARCHAR" property="couName" />
+    <result column="scores" jdbcType="INTEGER" property="scores" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -38,7 +39,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    scoid, userid, couid, username, couName
+    scoid, userid, couid, username, couName, scores
   </sql>
   <select id="selectByExample" parameterType="com.example.onlinelearning.pojo.LearnscorevoExample" resultMap="BaseResultMap">
     select
@@ -60,9 +61,11 @@
   </select>
   <insert id="insert" parameterType="com.example.onlinelearning.pojo.Learnscorevo">
     insert into learnscorevo (scoid, userid, couid, 
-      username, couName)
+      username, couName, scores
+      )
     values (#{scoid,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{couid,jdbcType=INTEGER}, 
-      #{username,jdbcType=VARCHAR}, #{couName,jdbcType=VARCHAR})
+      #{username,jdbcType=VARCHAR}, #{couName,jdbcType=VARCHAR}, #{scores,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.example.onlinelearning.pojo.Learnscorevo">
     insert into learnscorevo
@@ -82,6 +85,9 @@
       <if test="couName != null">
         couName,
       </if>
+      <if test="scores != null">
+        scores,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="scoid != null">
@@ -98,6 +104,9 @@
       </if>
       <if test="couName != null">
         #{couName,jdbcType=VARCHAR},
+      </if>
+      <if test="scores != null">
+        #{scores,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>

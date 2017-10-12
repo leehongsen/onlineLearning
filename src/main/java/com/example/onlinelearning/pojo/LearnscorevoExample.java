@@ -443,6 +443,66 @@ public class LearnscorevoExample {
             addCriterion("couName not between", value1, value2, "couName");
             return (Criteria) this;
         }
+
+        public Criteria andScoresIsNull() {
+            addCriterion("scores is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresIsNotNull() {
+            addCriterion("scores is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresEqualTo(Integer value) {
+            addCriterion("scores =", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresNotEqualTo(Integer value) {
+            addCriterion("scores <>", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresGreaterThan(Integer value) {
+            addCriterion("scores >", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresGreaterThanOrEqualTo(Integer value) {
+            addCriterion("scores >=", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresLessThan(Integer value) {
+            addCriterion("scores <", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresLessThanOrEqualTo(Integer value) {
+            addCriterion("scores <=", value, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresIn(List<Integer> values) {
+            addCriterion("scores in", values, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresNotIn(List<Integer> values) {
+            addCriterion("scores not in", values, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresBetween(Integer value1, Integer value2) {
+            addCriterion("scores between", value1, value2, "scores");
+            return (Criteria) this;
+        }
+
+        public Criteria andScoresNotBetween(Integer value1, Integer value2) {
+            addCriterion("scores not between", value1, value2, "scores");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

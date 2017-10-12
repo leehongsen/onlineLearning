@@ -426,6 +426,7 @@
                                         ,shade: 0 //不显示遮罩
                                         ,yes: function(){
                                             layer.closeAll();
+                                            location.reload();
                                         }
                                     });
                                 }else {
@@ -453,11 +454,6 @@
                     },
                     content:$("#hidden")
                 });
-            });
-            coursewareTable.reload({
-                where:{
-
-                }
             });
         });
     });
